@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - TravelConnect</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TravelConnect.styles.css" asp-append-version="true" />
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+
+                <!-- LOGO -->
+                <a class="navbar-brand logo" asp-controller="Home" asp-action="Index">
+                    <span>✈</span> TravelConnect
+                </a>
+
+                <!-- MOBILE BUTTON -->
+                <button class="navbar-toggler" type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- MENU -->
+                <div class="collapse navbar-collapse" id="mainNavbar">
+
+                    <ul class="navbar-nav mx-auto">
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                Trang chủ
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Location" asp-action="Index">
+                                Địa điểm
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Post" asp-action="Index">
+                                Cộng đồng
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Itinerary" asp-action="Index">
+                                Lịch trình
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link ai-menu" asp-controller="AI" asp-action="Index">
+                                ✨ AI du lịch
+                            </a>
+                        </li>
+
+                    </ul>
+
+                    <!-- RIGHT MENU -->
+                    <div class="header-actions">
+
+                        <a href="#" class="search-btn">
+                            🔍
+                        </a>
+
+                        <a href="#" class="login-btn">
+                            Đăng nhập
+                        </a>
+
+                        <a href="#" class="register-btn">
+                            Đăng ký
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <!-- MAIN CONTENT -->
+    <main>
+        @RenderBody()
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="container">
+
+            <div class="footer-content">
+
+                <div>
+                    <h3>✈ TravelConnect</h3>
+                    <p>
+                        Kết nối cộng đồng yêu thích du lịch,
+                        khám phá những hành trình mới.
+                    </p>
+                </div>
+
+                <div>
+                    <h4>Khám phá</h4>
+                    <a href="#">Địa điểm du lịch</a>
+                    <a href="#">Bài viết cộng đồng</a>
+                    <a href="#">Lịch trình</a>
+                </div>
+
+                <div>
+                    <h4>Hỗ trợ</h4>
+                    <a href="#">Về chúng tôi</a>
+                    <a href="#">Liên hệ</a>
+                    <a href="#">Điều khoản</a>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                © 2026 TravelConnect. All rights reserved.
+            </div>
+
+        </div>
+    </footer>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

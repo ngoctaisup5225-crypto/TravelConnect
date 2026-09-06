@@ -1,0 +1,143 @@
+﻿@model TravelConnect.Models.Location
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<!-- LOCATION DETAIL -->
+
+<section class="detail-page">
+
+    <div class="container">
+
+        <!-- BREADCRUMB -->
+        <div class="breadcrumb-custom">
+            <a asp-controller="Home" asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <a asp-controller="Location" asp-action="Index">
+                Địa điểm
+            </a>
+
+            <span>›</span>
+
+            <span>@Model.Name</span>
+        </div>
+
+
+        <!-- HERO IMAGE -->
+
+        <div class="detail-image">
+
+            <img src="@Model.Image"
+                 alt="@Model.Name" />
+
+            <span class="detail-category">
+                @Model.Category
+            </span>
+
+            <button class="detail-favorite">
+                ♡
+            </button>
+
+        </div>
+
+
+        <!-- INFORMATION -->
+
+        <div class="detail-content">
+
+            <div class="detail-main">
+
+                <span class="section-label">
+                    @Model.Category.ToUpper()
+                </span>
+
+                <h1>@Model.Name</h1>
+
+                <div class="detail-meta">
+
+                    <span>
+                        📍 @Model.Province
+                    </span>
+
+                    <span>
+                        ⭐ @Model.Rating / 5
+                    </span>
+
+                </div>
+
+                <p class="detail-description">
+                    @Model.Description
+                </p>
+
+
+                <h2>Giới thiệu</h2>
+
+                <p>
+                    @Model.Name là một trong những điểm đến được
+                    nhiều du khách yêu thích tại Việt Nam. Nơi đây
+                    mang đến nhiều trải nghiệm thú vị, phù hợp cho
+                    những chuyến đi cùng gia đình, bạn bè hoặc hành
+                    trình khám phá cá nhân.
+                </p>
+
+                <p>
+                    Du khách có thể khám phá cảnh quan thiên nhiên,
+                    thưởng thức ẩm thực địa phương và tìm hiểu văn
+                    hóa đặc trưng của vùng đất này.
+                </p>
+
+            </div>
+
+
+            <!-- SIDEBAR -->
+
+            <aside class="detail-sidebar">
+
+                <div class="action-box">
+
+                    <h3>
+                        Lên kế hoạch chuyến đi
+                    </h3>
+
+                    <p>
+                        Thêm địa điểm này vào lịch trình của bạn.
+                    </p>
+
+                    <a href="#" class="primary-action">
+                        🗓️ Thêm vào lịch trình
+                    </a>
+
+                    <a href="#" class="secondary-action">
+                        ❤️ Lưu địa điểm
+                    </a>
+
+                </div>
+
+
+                <div class="rating-box">
+
+                    <span class="big-rating">
+                        @Model.Rating
+                    </span>
+
+                    <div>
+                        ⭐⭐⭐⭐⭐
+                        <p>
+                            Đánh giá từ cộng đồng
+                        </p>
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>

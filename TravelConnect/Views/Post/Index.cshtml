@@ -1,0 +1,180 @@
+﻿@model List<TravelConnect.Models.Post>
+
+@{
+    ViewData["Title"] = "Cộng đồng";
+}
+
+<section class="community-page">
+
+    <div class="community-header">
+        <div class="container">
+
+            <div class="community-heading">
+                <div>
+                    <span class="community-label">🌏 TRAVEL COMMUNITY</span>
+                    <h1>Cộng đồng du lịch</h1>
+                    <p>
+                        Chia sẻ hành trình, kinh nghiệm và những địa điểm
+                        tuyệt vời cùng cộng đồng TravelConnect.
+                    </p>
+                </div>
+
+                <a href="#" class="create-post-btn">
+                    ✏️ Viết bài
+                </a>
+            </div>
+
+            <!-- Tìm kiếm -->
+            <form asp-controller="Post"
+                  asp-action="Index"
+                  method="get"
+                  class="community-search">
+
+                <input type="text"
+                       name="search"
+                       value="@ViewBag.Search"
+                       placeholder="Tìm bài viết, địa điểm, tác giả..." />
+
+                <button type="submit">
+                    🔍 Tìm kiếm
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <div class="container">
+
+        <div class="community-content">
+
+            <div class="community-main">
+
+                <div class="community-result">
+                    <h2>Bài viết mới nhất</h2>
+
+                    <span>
+                        @Model.Count bài viết
+                    </span>
+                </div>
+
+
+                @if (Model.Any())
+                {
+                    <div class="post-list">
+
+                        @foreach (var post in Model)
+                        {
+                            <article class="community-post">
+
+                                <div class="post-image">
+
+                                    <img src="@post.Image"
+                                         alt="@post.Title" />
+
+                                </div>
+
+                                <div class="post-body">
+
+                                    <div class="post-location">
+                                        📍 @post.Location
+                                    </div>
+
+                                    <h3>
+                                        <a asp-controller="Post"
+                                           asp-action="Details"
+                                           asp-route-id="@post.Id">
+                                            @post.Title
+                                        </a>
+                                    </h3>
+
+                                    <p>
+                                        @post.Content
+                                    </p>
+
+                                    <div class="post-footer">
+
+                                        <div class="post-author">
+                                            👤 @post.Author
+                                        </div>
+
+                                        <div class="post-date">
+                                            @post.CreatedAt.ToString("dd/MM/yyyy")
+                                        </div>
+
+                                        <div class="post-stats">
+                                            ❤️ @post.Likes
+                                            &nbsp;&nbsp;
+                                            💬 @post.Comments
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </article>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="community-empty">
+
+                        <div>🔎</div>
+
+                        <h3>Không tìm thấy bài viết</h3>
+
+                        <p>
+                            Hãy thử tìm kiếm bằng từ khóa khác.
+                        </p>
+
+                        <a asp-controller="Post"
+                           asp-action="Index">
+                            Xem tất cả bài viết
+                        </a>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- Sidebar -->
+            <aside class="community-sidebar">
+
+                <div class="community-box">
+
+                    <h3>🔥 Chủ đề nổi bật</h3>
+
+                    <a href="#">🏖️ Du lịch biển</a>
+                    <a href="#">🏔️ Du lịch vùng núi</a>
+                    <a href="#">🌿 Du lịch thiên nhiên</a>
+                    <a href="#">🏮 Du lịch văn hóa</a>
+
+                </div>
+
+
+                <div class="community-box">
+
+                    <h3>💡 Chia sẻ cùng cộng đồng</h3>
+
+                    <p>
+                        Bạn vừa có một chuyến đi đáng nhớ?
+                        Hãy chia sẻ kinh nghiệm của mình với mọi người.
+                    </p>
+
+                    <a href="#" class="sidebar-post-btn">
+                        ✏️ Viết bài ngay
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>

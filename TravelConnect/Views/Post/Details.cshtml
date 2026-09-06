@@ -1,0 +1,220 @@
+﻿@model TravelConnect.Models.Post
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<section class="post-detail-page">
+
+    <div class="container">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-custom">
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <a asp-controller="Post"
+               asp-action="Index">
+                Cộng đồng
+            </a>
+
+            <span>›</span>
+
+            <span>@Model.Title</span>
+        </div>
+
+
+        <div class="post-detail-layout">
+
+            <main class="post-detail-main">
+
+                <div class="post-detail-image">
+
+                    <img src="@Model.Image"
+                         alt="@Model.Title" />
+
+                </div>
+
+
+                <div class="post-detail-content">
+
+                    <div class="post-location">
+                        📍 @Model.Location
+                    </div>
+
+                    <h1>
+                        @Model.Title
+                    </h1>
+
+
+                    <div class="post-detail-author">
+
+                        <div class="author-avatar">
+                            👤
+                        </div>
+
+                        <div>
+                            <strong>@Model.Author</strong>
+
+                            <span>
+                                Đăng ngày
+                                @Model.CreatedAt.ToString("dd/MM/yyyy")
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="post-text">
+
+                        <p>
+                            @Model.Content
+                        </p>
+
+                        <p>
+                            Đây là một trong những chuyến đi mà mình
+                            cảm thấy rất đáng nhớ. Nếu bạn đang có kế
+                            hoạch đến @Model.Location thì chắc chắn
+                            đây là địa điểm đáng để trải nghiệm.
+                        </p>
+
+                        <p>
+                            Hy vọng những chia sẻ này sẽ giúp bạn có
+                            thêm thông tin để chuẩn bị cho chuyến đi
+                            của mình.
+                        </p>
+
+                    </div>
+
+
+                    <div class="post-actions">
+
+                        <button type="button">
+                            ❤️ @Model.Likes
+                        </button>
+
+                        <button type="button">
+                            💬 @Model.Comments bình luận
+                        </button>
+
+                        <button type="button">
+                            🔗 Chia sẻ
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Bình luận -->
+                <div class="comments-section">
+
+                    <h2>
+                        💬 Bình luận (@Model.Comments)
+                    </h2>
+
+                    <div class="comment-box">
+
+                        <textarea placeholder="Chia sẻ suy nghĩ của bạn..."></textarea>
+
+                        <button type="button">
+                            Gửi bình luận
+                        </button>
+
+                    </div>
+
+
+                    <div class="comment-item">
+
+                        <div class="comment-avatar">
+                            👤
+                        </div>
+
+                        <div class="comment-content">
+
+                            <strong>Người dùng TravelConnect</strong>
+
+                            <span>2 ngày trước</span>
+
+                            <p>
+                                Bài viết rất hữu ích! Mình cũng đang
+                                lên kế hoạch cho chuyến đi này.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="comment-item">
+
+                        <div class="comment-avatar">
+                            👤
+                        </div>
+
+                        <div class="comment-content">
+
+                            <strong>Minh Anh</strong>
+
+                            <span>3 ngày trước</span>
+
+                            <p>
+                                Cảm ơn bạn đã chia sẻ kinh nghiệm nhé ❤️
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </main>
+
+
+            <!-- Sidebar -->
+            <aside class="post-detail-sidebar">
+
+                <div class="detail-community-box">
+
+                    <h3>📍 Địa điểm</h3>
+
+                    <strong>
+                        @Model.Location
+                    </strong>
+
+                    <a asp-controller="Location"
+                       asp-action="Index">
+                        Xem các địa điểm →
+                    </a>
+
+                </div>
+
+
+                <div class="detail-community-box">
+
+                    <h3>🗓️ Lên kế hoạch</h3>
+
+                    <p>
+                        Muốn đến @Model.Location?
+                        Hãy tạo lịch trình cho chuyến đi của bạn.
+                    </p>
+
+                    <a asp-controller="Itinerary"
+                       asp-action="Index"
+                       class="plan-button">
+                        Tạo lịch trình
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>

@@ -1,0 +1,167 @@
+﻿@model List<TravelConnect.Models.Location>
+
+@{
+    ViewData["Title"] = "Địa điểm du lịch";
+}
+
+<div class="location-page">
+
+    <!-- HEADER -->
+    <section class="location-header">
+        <div class="container">
+
+            <span class="section-label">KHÁM PHÁ VIỆT NAM</span>
+
+            <h1>Địa điểm du lịch</h1>
+
+            <p>
+                Tìm kiếm và khám phá những điểm đến tuyệt vời
+                cho hành trình tiếp theo của bạn.
+            </p>
+
+        </div>
+    </section>
+
+
+    <!-- SEARCH + FILTER -->
+    <section class="location-filter">
+        <div class="container">
+
+            <form method="get" class="filter-box">
+
+                <div class="location-search">
+                    🔍
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.Search"
+                           placeholder="Tìm địa điểm..." />
+                </div>
+
+                <select name="category">
+                    <option value="Tất cả">Tất cả</option>
+
+                    <option value="Biển"
+                            selected="@(ViewBag.Category == "Biển")">
+                        🌊 Biển
+                    </option>
+
+                    <option value="Núi"
+                            selected="@(ViewBag.Category == "Núi")">
+                        ⛰️ Núi
+                    </option>
+
+                    <option value="Thiên nhiên"
+                            selected="@(ViewBag.Category == "Thiên nhiên")">
+                        🌲 Thiên nhiên
+                    </option>
+
+                    <option value="Văn hóa"
+                            selected="@(ViewBag.Category == "Văn hóa")">
+                        🏛️ Văn hóa
+                    </option>
+                </select>
+
+                <button type="submit">
+                    Tìm kiếm
+                </button>
+
+            </form>
+
+        </div>
+    </section>
+
+
+    <!-- LOCATIONS -->
+    <section class="section">
+
+        <div class="container">
+
+            <div class="location-result">
+                <h2>
+                    Điểm đến nổi bật
+                </h2>
+
+                <span>
+                    @Model.Count địa điểm
+                </span>
+            </div>
+
+
+            @if (Model.Count == 0)
+            {
+                <div class="no-result">
+                    <div>😢</div>
+
+                    <h3>Không tìm thấy địa điểm</h3>
+
+                    <p>
+                        Thử tìm kiếm với từ khóa khác nhé.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="location-grid">
+
+                    @foreach (var location in Model)
+                    {
+                        <div class="location-card">
+
+                            <div class="location-image">
+
+                                <img src="@location.Image"
+                                     alt="@location.Name" />
+
+                                <span class="location-category">
+                                    @location.Category
+                                </span>
+
+                                <button class="favorite-btn">
+                                    ♡
+                                </button>
+
+                            </div>
+
+
+                            <div class="location-info">
+
+                                <div class="location-title">
+
+                                    <h3>
+                                        @location.Name
+                                    </h3>
+
+                                    <span>
+                                        ⭐ @location.Rating
+                                    </span>
+
+                                </div>
+
+                                <p class="location-province">
+                                    📍 @location.Province
+                                </p>
+
+                                <p class="location-description">
+                                    @location.Description
+                                </p>
+
+                                <a asp-controller="Location"
+                                   asp-action="Details"
+                                   asp-route-id="@location.Id"
+                                   class="location-detail">
+                                    Xem chi tiết →
+                                </a>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </div>
+
+    </section>
+
+</div>
