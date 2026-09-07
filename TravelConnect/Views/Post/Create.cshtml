@@ -1,0 +1,211 @@
+﻿@model TravelConnect.Models.Post
+
+@{
+    ViewData["Title"] = "Tạo bài viết";
+}
+
+<section class="post-create-page">
+
+    <div class="container">
+
+        <!-- BREADCRUMB -->
+
+        <div class="breadcrumb-custom">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <a asp-controller="Post"
+               asp-action="Index">
+                Cộng đồng
+            </a>
+
+            <span>›</span>
+
+            <span>Tạo bài viết</span>
+
+        </div>
+
+
+        <!-- HEADER -->
+
+        <div class="post-create-header">
+
+            <span class="section-label">
+                CỘNG ĐỒNG
+            </span>
+
+            <h1>
+                ✍️ Chia sẻ hành trình của bạn
+            </h1>
+
+            <p>
+                Chia sẻ kinh nghiệm, hình ảnh và những địa điểm
+                thú vị với cộng đồng TravelConnect.
+            </p>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <div class="post-form-container">
+
+            <form asp-controller="Post"
+                  asp-action="Create"
+                  method="post"
+                  class="post-form">
+
+                @Html.AntiForgeryToken()
+
+
+                <!-- VALIDATION -->
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger">
+                </div>
+
+
+                <!-- TITLE -->
+
+                <div class="form-group">
+
+                    <label asp-for="Title">
+                        Tiêu đề bài viết
+                    </label>
+
+                    <input asp-for="Title"
+                           class="form-control"
+                           placeholder="Ví dụ: Kinh nghiệm du lịch Đà Lạt 3 ngày 2 đêm" />
+
+                    <span asp-validation-for="Title"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="form-group">
+
+                    <label asp-for="LocationName">
+                        Địa điểm
+                    </label>
+
+                    <select asp-for="LocationName"
+                            class="form-control">
+
+                        <option value="">
+                            -- Chọn địa điểm --
+                        </option>
+
+                        <option value="Đà Nẵng">
+                            📍 Đà Nẵng
+                        </option>
+
+                        <option value="Đà Lạt">
+                            🌲 Đà Lạt
+                        </option>
+
+                        <option value="Vịnh Hạ Long">
+                            🌊 Vịnh Hạ Long
+                        </option>
+
+                        <option value="Sapa">
+                            ⛰️ Sapa
+                        </option>
+
+                        <option value="Phú Quốc">
+                            🏝️ Phú Quốc
+                        </option>
+
+                        <option value="Hội An">
+                            🏮 Hội An
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- IMAGE -->
+
+                <div class="form-group">
+
+                    <label asp-for="Image">
+                        Link hình ảnh
+                    </label>
+
+                    <input asp-for="Image"
+                           class="form-control"
+                           placeholder="https://..." />
+
+                    <small>
+                        Nhập đường dẫn hình ảnh nếu muốn thêm ảnh
+                        cho bài viết.
+                    </small>
+
+                </div>
+
+
+                <!-- CONTENT -->
+
+                <div class="form-group">
+
+                    <label asp-for="Content">
+                        Nội dung
+                    </label>
+
+                    <textarea asp-for="Content"
+                              class="form-control"
+                              rows="10"
+                              placeholder="Chia sẻ trải nghiệm của bạn...">
+                    </textarea>
+
+                    <span asp-validation-for="Content"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="post-form-actions">
+
+                    <a asp-controller="Post"
+                       asp-action="Index"
+                       class="cancel-button">
+                        Hủy
+                    </a>
+
+                    <button type="submit"
+                            class="submit-post-button">
+                        🚀 Đăng bài
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial"
+        );
+    }
+
+}

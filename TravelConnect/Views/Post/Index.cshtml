@@ -6,175 +6,604 @@
 
 <section class="community-page">
 
-    <div class="community-header">
-        <div class="container">
+    <div class="container">
+        
+        <!-- BREADCRUMB -->
 
-            <div class="community-heading">
-                <div>
-                    <span class="community-label">🌏 TRAVEL COMMUNITY</span>
-                    <h1>Cộng đồng du lịch</h1>
-                    <p>
-                        Chia sẻ hành trình, kinh nghiệm và những địa điểm
-                        tuyệt vời cùng cộng đồng TravelConnect.
-                    </p>
-                </div>
+        <div class="breadcrumb-custom">
 
-                <a href="#" class="create-post-btn">
-                    ✏️ Viết bài
-                </a>
-            </div>
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
 
-            <!-- Tìm kiếm -->
-            <form asp-controller="Post"
-                  asp-action="Index"
-                  method="get"
-                  class="community-search">
+            <span>›</span>
 
-                <input type="text"
-                       name="search"
-                       value="@ViewBag.Search"
-                       placeholder="Tìm bài viết, địa điểm, tác giả..." />
-
-                <button type="submit">
-                    🔍 Tìm kiếm
-                </button>
-
-            </form>
+            <span>Cộng đồng</span>
 
         </div>
-    </div>
 
 
-    <div class="container">
+        <!-- HEADER -->
 
-        <div class="community-content">
+        <div class="community-header">
 
-            <div class="community-main">
+            <div>
 
-                <div class="community-result">
-                    <h2>Bài viết mới nhất</h2>
+                <span class="section-label">
+                    CỘNG ĐỒNG
+                </span>
 
-                    <span>
-                        @Model.Count bài viết
-                    </span>
-                </div>
+                <h1>
+                    Câu chuyện từ cộng đồng
+                </h1>
+
+                <p>
+                    Chia sẻ trải nghiệm, kinh nghiệm du lịch
+                    và khám phá những hành trình mới.
+                </p>
+
+            </div>
 
 
-                @if (Model.Any())
+            <!-- CREATE POST -->
+
+            <a asp-controller="Post"
+               asp-action="Create"
+               class="create-post-button">
+
+                ✍️ Viết bài
+
+            </a>
+
+        </div>
+
+
+        <!-- POST LIST -->
+        @if (Model != null && Model.Any())
+        {
+            <div class="post-list">
+
+                @foreach (var post in Model)
                 {
-                    <div class="post-list">
+                    <article class="post-card">
 
-                        @foreach (var post in Model)
+                        <!-- IMAGE -->
+                        @if (!string.IsNullOrWhiteSpace(post.Image))
                         {
-                            <article class="community-post">
+                            <div class="post-image">
 
-                                <div class="post-image">
+                                <img src="@post.Image"
+                                     alt="@post.Title" />
 
-                                    <img src="@post.Image"
-                                         alt="@post.Title" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="post-image post-image-empty">
 
-                                </div>
+                                <span>
+                                    📷
+                                </span>
 
-                                <div class="post-body">
-
-                                    <div class="post-location">
-                                        📍 @post.Location
-                                    </div>
-
-                                    <h3>
-                                        <a asp-controller="Post"
-                                           asp-action="Details"
-                                           asp-route-id="@post.Id">
-                                            @post.Title
-                                        </a>
-                                    </h3>
-
-                                    <p>
-                                        @post.Content
-                                    </p>
-
-                                    <div class="post-footer">
-
-                                        <div class="post-author">
-                                            👤 @post.Author
-                                        </div>
-
-                                        <div class="post-date">
-                                            @post.CreatedAt.ToString("dd/MM/yyyy")
-                                        </div>
-
-                                        <div class="post-stats">
-                                            ❤️ @post.Likes
-                                            &nbsp;&nbsp;
-                                            💬 @post.Comments
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </article>
+                            </div>
                         }
 
-                    </div>
-                }
-                else
-                {
-                    <div class="community-empty">
 
-                        <div>🔎</div>
+                        <!-- CONTENT -->
 
-                        <h3>Không tìm thấy bài viết</h3>
+                        <div class="post-card-content">
 
-                        <p>
-                            Hãy thử tìm kiếm bằng từ khóa khác.
-                        </p>
 
-                        <a asp-controller="Post"
-                           asp-action="Index">
-                            Xem tất cả bài viết
-                        </a>
+                            <!-- USER -->
 
-                    </div>
+                            <div class="post-author">
+
+                                <div class="author-avatar">
+                                    👤
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        @post.UserName
+                                    </strong>
+
+                                    <small>
+                                        @post.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- LOCATION -->
+                            @if (!string.IsNullOrWhiteSpace(post.LocationName))
+                            {
+                                <span class="post-location">
+
+                                    📍 @post.LocationName
+
+                                </span>
+                            }
+
+
+                            <!-- TITLE -->
+
+                            <h2>
+
+                                <a asp-controller="Post"
+                                   asp-action="Details"
+                                   asp-route-id="@post.Id">
+
+                                    @post.Title
+
+                                </a>
+
+                            </h2>
+
+
+                            <!-- CONTENT PREVIEW -->
+
+                            <p class="post-description">
+
+                                @if (post.Content != null &&
+                                     post.Content.Length > 180)
+                                {
+                                    @post.Content.Substring(0, 180)
+
+                                    <span>...</span>
+                                }
+                                else
+                                {
+                                    @post.Content
+                                }
+
+                            </p>
+
+
+                            <!-- FOOTER -->
+
+                            <div class="post-card-footer">
+
+                                <div class="post-stats">
+
+                                    <span>
+                                        ❤️ @post.LikeCount
+                                    </span>
+
+                                    <span>
+                                        💬 @post.CommentCount
+                                    </span>
+
+                                </div>
+
+
+                                <a asp-controller="Post"
+                                   asp-action="Details"
+                                   asp-route-id="@post.Id"
+                                   class="post-detail-link">
+
+                                    Xem bài viết →
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
                 }
 
             </div>
+        }
+        else
+        {
+            <!-- EMPTY -->
 
+            <div class="empty-community">
 
-            <!-- Sidebar -->
-            <aside class="community-sidebar">
-
-                <div class="community-box">
-
-                    <h3>🔥 Chủ đề nổi bật</h3>
-
-                    <a href="#">🏖️ Du lịch biển</a>
-                    <a href="#">🏔️ Du lịch vùng núi</a>
-                    <a href="#">🌿 Du lịch thiên nhiên</a>
-                    <a href="#">🏮 Du lịch văn hóa</a>
-
+                <div class="empty-icon">
+                    📝
                 </div>
 
+                <h2>
+                    Chưa có bài viết nào
+                </h2>
 
-                <div class="community-box">
+                <p>
+                    Hãy là người đầu tiên chia sẻ hành trình
+                    của mình với cộng đồng.
+                </p>
 
-                    <h3>💡 Chia sẻ cùng cộng đồng</h3>
+                <a asp-controller="Post"
+                   asp-action="Create"
+                   class="create-post-button">
 
-                    <p>
-                        Bạn vừa có một chuyến đi đáng nhớ?
-                        Hãy chia sẻ kinh nghiệm của mình với mọi người.
-                    </p>
+                    ✍️ Viết bài đầu tiên
 
-                    <a href="#" class="sidebar-post-btn">
-                        ✏️ Viết bài ngay
-                    </a>
+                </a>
 
-                </div>
-
-            </aside>
-
-        </div>
+            </div>
+        }
 
     </div>
 
 </section>
+
+
+<style>
+
+    /* ================================
+       COMMUNITY PAGE
+       ================================ */
+
+    .community-page {
+        padding: 40px 0 80px;
+        background: #f7fafc;
+        min-height: 600px;
+    }
+
+
+    /* ================================
+       HEADER
+       ================================ */
+
+    .community-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 30px;
+        margin: 30px 0 40px;
+    }
+
+
+    .community-header h1 {
+        margin: 10px 0;
+        font-size: 38px;
+        font-weight: 700;
+        color: #102a43;
+    }
+
+
+    .community-header p {
+        margin: 0;
+        color: #627d98;
+        font-size: 16px;
+    }
+
+
+    /* ================================
+       CREATE BUTTON
+       ================================ */
+
+    .create-post-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 13px 22px;
+
+        background: #1687a7;
+        color: white;
+
+        border-radius: 10px;
+
+        text-decoration: none;
+        font-weight: 600;
+
+        white-space: nowrap;
+
+        transition: 0.2s;
+    }
+
+
+    .create-post-button:hover {
+        background: #11728d;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+
+    /* ================================
+       POST LIST
+       ================================ */
+
+    .post-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+    }
+
+
+    /* ================================
+       POST CARD
+       ================================ */
+
+    .post-card {
+        background: white;
+
+        border-radius: 16px;
+
+        overflow: hidden;
+
+        border: 1px solid #e6edf3;
+
+        box-shadow: 0 5px 20px rgba(16, 42, 67, 0.06);
+
+        transition: 0.25s;
+    }
+
+
+    .post-card:hover {
+        transform: translateY(-5px);
+
+        box-shadow: 0 12px 30px rgba(16, 42, 67, 0.12);
+    }
+
+
+    /* ================================
+       IMAGE
+       ================================ */
+
+    .post-image {
+        width: 100%;
+        height: 210px;
+        overflow: hidden;
+        background: #e8f1f5;
+    }
+
+
+    .post-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+
+    .post-image-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 45px;
+    }
+
+
+    /* ================================
+       CONTENT
+       ================================ */
+
+    .post-card-content {
+        padding: 22px;
+    }
+
+
+    /* ================================
+       AUTHOR
+       ================================ */
+
+    .post-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        margin-bottom: 15px;
+    }
+
+
+    .author-avatar {
+        width: 38px;
+        height: 38px;
+
+        border-radius: 50%;
+
+        background: #e8f6fa;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 18px;
+    }
+
+
+    .post-author strong {
+        display: block;
+        color: #243b53;
+        font-size: 14px;
+    }
+
+
+    .post-author small {
+        display: block;
+        margin-top: 2px;
+
+        color: #829ab1;
+        font-size: 12px;
+    }
+
+
+    /* ================================
+       LOCATION
+       ================================ */
+
+    .post-location {
+        display: inline-block;
+
+        margin-bottom: 10px;
+
+        color: #1687a7;
+
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    /* ================================
+       TITLE
+       ================================ */
+
+    .post-card h2 {
+        margin: 5px 0 10px;
+
+        font-size: 21px;
+        line-height: 1.35;
+    }
+
+
+    .post-card h2 a {
+        color: #102a43;
+        text-decoration: none;
+    }
+
+
+    .post-card h2 a:hover {
+        color: #1687a7;
+    }
+
+
+    /* ================================
+       DESCRIPTION
+       ================================ */
+
+    .post-description {
+        color: #627d98;
+
+        font-size: 14px;
+        line-height: 1.7;
+
+        min-height: 72px;
+
+        margin-bottom: 20px;
+    }
+
+
+    /* ================================
+       FOOTER
+       ================================ */
+
+    .post-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding-top: 15px;
+
+        border-top: 1px solid #edf2f7;
+    }
+
+
+    .post-stats {
+        display: flex;
+        gap: 15px;
+
+        color: #627d98;
+
+        font-size: 13px;
+    }
+
+
+    .post-detail-link {
+        color: #1687a7;
+
+        text-decoration: none;
+
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    .post-detail-link:hover {
+        color: #102a43;
+    }
+
+
+    /* ================================
+       EMPTY
+       ================================ */
+
+    .empty-community {
+        text-align: center;
+
+        background: white;
+
+        border-radius: 16px;
+
+        padding: 70px 20px;
+
+        border: 1px solid #e6edf3;
+    }
+
+
+    .empty-icon {
+        font-size: 55px;
+        margin-bottom: 15px;
+    }
+
+
+    .empty-community h2 {
+        color: #102a43;
+        margin-bottom: 10px;
+    }
+
+
+    .empty-community p {
+        color: #627d98;
+        margin-bottom: 25px;
+    }
+
+
+    /* ================================
+       RESPONSIVE
+       ================================ */
+
+    @@media (max-width: 992px) {
+
+        .post-list {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+
+    @@media (max-width: 768px) {
+
+        .community-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+
+        .community-header h1 {
+            font-size: 30px;
+        }
+
+
+        .post-list {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+
+     @@media (max-width: 480px) {
+
+        .community-page {
+            padding-top: 25px;
+        }
+
+
+        .community-header h1 {
+            font-size: 26px;
+        }
+
+
+        .post-card-content {
+            padding: 18px;
+        }
+
+    }
+
+</style>

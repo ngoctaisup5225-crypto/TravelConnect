@@ -5,109 +5,74 @@ namespace TravelConnect.Controllers
 {
     public class PostController : Controller
     {
-        // Danh sách bài viết mẫu
-        private List<Post> GetPosts()
+        private static List<Post> posts = new List<Post>
         {
-            return new List<Post>
+            new Post
             {
-                new Post
-                {
-                    Id = 1,
-                    Title = "Một ngày khám phá Đà Lạt",
-                    Content = "Đà Lạt luôn là một trong những địa điểm mình yêu thích nhất. Không khí mát mẻ, cảnh đẹp và rất nhiều quán cà phê thú vị.",
-                    Author = "Nguyễn Minh",
-                    Location = "Đà Lạt",
-                    Image = "https://images.unsplash.com/photo-1599707254554-027aeb4deacd?auto=format&fit=crop&w=1000&q=80",
-                    CreatedAt = new DateTime(2026, 8, 20),
-                    Likes = 125,
-                    Comments = 18
-                },
+                Id = 1,
+                UserId = 1,
+                UserName = "Nguyễn Minh",
+                Title = "Một ngày chill ở Đà Lạt 🌲",
+                Content = "Đà Lạt thật sự rất đẹp. Không khí mát mẻ, đồ ăn ngon và có rất nhiều địa điểm để khám phá.",
+                Image = "https://images.unsplash.com/photo-1552521001-4d7e4b1d8c8a?auto=format&fit=crop&w=1000&q=80",
+                LocationName = "Đà Lạt",
+                CreatedAt = DateTime.Now.AddDays(-2),
+                LikeCount = 15,
+                CommentCount = 4
+            },
 
-                new Post
-                {
-                    Id = 2,
-                    Title = "Kinh nghiệm du lịch Phú Quốc 3 ngày 2 đêm",
-                    Content = "Nếu bạn đang có kế hoạch đi Phú Quốc thì đây là lịch trình mình đã trải nghiệm. Mình sẽ chia sẻ những địa điểm ăn uống, vui chơi và nghỉ ngơi.",
-                    Author = "Trần Hoàng",
-                    Location = "Phú Quốc",
-                    Image = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
-                    CreatedAt = new DateTime(2026, 8, 15),
-                    Likes = 98,
-                    Comments = 12
-                },
-
-                new Post
-                {
-                    Id = 3,
-                    Title = "Sapa mùa lúa chín có gì đẹp?",
-                    Content = "Sapa vào mùa lúa chín thực sự rất đẹp. Những thửa ruộng bậc thang trải dài trên các sườn núi tạo nên khung cảnh cực kỳ ấn tượng.",
-                    Author = "Lê Anh",
-                    Location = "Sapa",
-                    Image = "https://images.unsplash.com/photo-1573270689103-d7a4e42b609a?auto=format&fit=crop&w=1000&q=80",
-                    CreatedAt = new DateTime(2026, 8, 10),
-                    Likes = 156,
-                    Comments = 25
-                },
-
-                new Post
-                {
-                    Id = 4,
-                    Title = "Những địa điểm không thể bỏ qua ở Đà Nẵng",
-                    Content = "Đà Nẵng có rất nhiều địa điểm đẹp như biển Mỹ Khê, cầu Rồng, bán đảo Sơn Trà và Bà Nà Hills.",
-                    Author = "Phạm Tuấn",
-                    Location = "Đà Nẵng",
-                    Image = "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1000&q=80",
-                    CreatedAt = new DateTime(2026, 8, 5),
-                    Likes = 87,
-                    Comments = 9
-                },
-
-                new Post
-                {
-                    Id = 5,
-                    Title = "Check-in phố cổ Hội An buổi tối",
-                    Content = "Buổi tối ở Hội An rất đẹp với những con phố được thắp sáng bằng đèn lồng. Đây là địa điểm rất phù hợp để đi dạo và chụp ảnh.",
-                    Author = "Ngọc Mai",
-                    Location = "Hội An",
-                    Image = "https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1000&q=80",
-                    CreatedAt = new DateTime(2026, 7, 28),
-                    Likes = 112,
-                    Comments = 15
-                }
-            };
-        }
-
-        // GET: /Post
-        // GET: /Post/Index
-        public IActionResult Index(string search)
-        {
-            var posts = GetPosts();
-
-            // Tìm kiếm bài viết
-            if (!string.IsNullOrWhiteSpace(search))
+            new Post
             {
-                search = search.Trim();
+                Id = 2,
+                UserId = 2,
+                UserName = "Hoàng Anh",
+                Title = "Kinh nghiệm du lịch Phú Quốc 🏝️",
+                Content = "Nếu có thời gian thì mọi người nên dành ít nhất 3 ngày để khám phá Phú Quốc. Biển rất đẹp và đồ ăn khá ngon.",
+                Image = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
+                LocationName = "Phú Quốc",
+                CreatedAt = DateTime.Now.AddDays(-5),
+                LikeCount = 23,
+                CommentCount = 7
+            },
 
-                posts = posts
-                    .Where(x =>
-                        x.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                        x.Content.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                        x.Location.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                        x.Author.Contains(search, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+            new Post
+            {
+                Id = 3,
+                UserId = 3,
+                UserName = "Tuấn Travel",
+                Title = "Sapa mùa này có gì? ⛰️",
+                Content = "Sapa thời tiết khá lạnh nhưng cảnh núi rất đẹp. Phù hợp với những ai thích khám phá và trekking.",
+                Image = "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1000&q=80",
+                LocationName = "Sapa",
+                CreatedAt = DateTime.Now.AddDays(-8),
+                LikeCount = 31,
+                CommentCount = 9
             }
+        };
 
-            ViewBag.Search = search;
 
-            return View(posts);
+        // =========================
+        // DANH SÁCH BÀI VIẾT
+        // =========================
+
+        public IActionResult Index()
+        {
+            var result = posts
+                .OrderByDescending(x => x.CreatedAt)
+                .ToList();
+
+            return View(result);
         }
 
-        // GET: /Post/Details/1
+
+        // =========================
+        // CHI TIẾT BÀI VIẾT
+        // =========================
+
         public IActionResult Details(int id)
         {
-            var posts = GetPosts();
-
-            var post = posts.FirstOrDefault(x => x.Id == id);
+            var post = posts
+                .FirstOrDefault(x => x.Id == id);
 
             if (post == null)
             {
@@ -115,6 +80,71 @@ namespace TravelConnect.Controllers
             }
 
             return View(post);
+        }
+
+
+        // =========================
+        // TẠO BÀI VIẾT - GET
+        // =========================
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+
+        // =========================
+        // TẠO BÀI VIẾT - POST
+        // =========================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Post post)
+        {
+            if (string.IsNullOrWhiteSpace(post.Title))
+            {
+                ModelState.AddModelError(
+                    "Title",
+                    "Vui lòng nhập tiêu đề bài viết."
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(post.Content))
+            {
+                ModelState.AddModelError(
+                    "Content",
+                    "Vui lòng nhập nội dung bài viết."
+                );
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(post);
+            }
+
+            post.Id = posts.Count > 0
+                ? posts.Max(x => x.Id) + 1
+                : 1;
+
+            // Tạm thời sử dụng UserId = 1
+            // Sau này làm đăng nhập sẽ lấy UserId từ tài khoản đang đăng nhập
+            post.UserId = 1;
+
+            post.UserName = "Người dùng";
+
+            post.CreatedAt = DateTime.Now;
+
+            post.LikeCount = 0;
+
+            post.CommentCount = 0;
+
+            posts.Add(post);
+
+            return RedirectToAction("Details", new
+            {
+                id = post.Id
+            });
         }
     }
 }

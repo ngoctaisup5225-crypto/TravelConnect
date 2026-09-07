@@ -1,0 +1,224 @@
+﻿@model TravelConnect.Models.ItineraryItem
+
+@{
+    ViewData["Title"] = "Thêm địa điểm";
+
+    var itinerary =
+        ViewBag.Itinerary as TravelConnect.Models.Itinerary;
+}
+
+<section class="add-location-page">
+
+    <div class="container">
+
+        <div class="breadcrumb-custom">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <a asp-controller="Itinerary"
+               asp-action="Index">
+                Lịch trình
+            </a>
+
+            <span>›</span>
+
+            <a asp-controller="Itinerary"
+               asp-action="Details"
+               asp-route-id="@Model.ItineraryId">
+                @itinerary?.Title
+            </a>
+
+            <span>›</span>
+
+            <span>Thêm địa điểm</span>
+
+        </div>
+
+
+        <div class="add-location-container">
+
+            <div class="add-location-heading">
+
+                <span>
+                    📍 TRAVEL PLANNER
+                </span>
+
+                <h1>
+                    Thêm địa điểm
+                </h1>
+
+                <p>
+                    Thêm địa điểm tham quan vào lịch trình
+                    của bạn.
+                </p>
+
+            </div>
+
+
+            <form asp-controller="Itinerary"
+                  asp-action="AddLocation"
+                  method="post"
+                  class="itinerary-form">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       asp-for="ItineraryId" />
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="validation-summary">
+                </div>
+
+
+                <!-- Địa điểm -->
+
+                <div class="form-group">
+
+                    <label asp-for="LocationId">
+                        Địa điểm
+                    </label>
+
+                    <select asp-for="LocationId"
+                            class="form-control">
+
+                        <option value="0">
+                            -- Chọn địa điểm --
+                        </option>
+
+                        <option value="1">
+                            📍 Đà Nẵng
+                        </option>
+
+                        <option value="2">
+                            🌲 Đà Lạt
+                        </option>
+
+                        <option value="3">
+                            🌊 Vịnh Hạ Long
+                        </option>
+
+                        <option value="4">
+                            ⛰️ Sapa
+                        </option>
+
+                        <option value="5">
+                            🏝️ Phú Quốc
+                        </option>
+
+                        <option value="6">
+                            🏮 Hội An
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="LocationId"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Ngày -->
+
+                <div class="form-group">
+
+                    <label asp-for="Day">
+                        Ngày tham quan
+                    </label>
+
+                    <select asp-for="Day"
+                            class="form-control">
+
+                        <option value="Ngày 1">
+                            Ngày 1
+                        </option>
+
+                        <option value="Ngày 2">
+                            Ngày 2
+                        </option>
+
+                        <option value="Ngày 3">
+                            Ngày 3
+                        </option>
+
+                        <option value="Ngày 4">
+                            Ngày 4
+                        </option>
+
+                        <option value="Ngày 5">
+                            Ngày 5
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Thời gian -->
+
+                <div class="form-group">
+
+                    <label asp-for="Time">
+                        Thời gian
+                    </label>
+
+                    <input asp-for="Time"
+                           type="time"
+                           class="form-control" />
+
+                </div>
+
+
+                <!-- Ghi chú -->
+
+                <div class="form-group">
+
+                    <label asp-for="Note">
+                        Ghi chú
+                    </label>
+
+                    <textarea asp-for="Note"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Ví dụ: Tham quan, chụp ảnh, ăn uống...">
+                    </textarea>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="form-actions">
+
+                    <a asp-controller="Itinerary"
+                       asp-action="Details"
+                       asp-route-id="@Model.ItineraryId"
+                       class="cancel-itinerary-btn">
+                        Hủy
+                    </a>
+
+                    <button type="submit"
+                            class="save-itinerary-btn">
+                        📍 Thêm vào lịch trình
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

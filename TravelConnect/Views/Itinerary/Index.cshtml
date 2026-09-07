@@ -1,0 +1,131 @@
+﻿@model List<TravelConnect.Models.Itinerary>
+
+@{
+    ViewData["Title"] = "Lịch trình";
+}
+
+<section class="itinerary-page">
+
+    <div class="container">
+
+        <div class="itinerary-header">
+
+            <div>
+                <span class="itinerary-label">
+                    🗓️ TRAVEL PLANNER
+                </span>
+
+                <h1>Lịch trình của tôi</h1>
+
+                <p>
+                    Lên kế hoạch, quản lý và lưu lại những chuyến đi
+                    đáng nhớ của bạn.
+                </p>
+            </div>
+
+            <a asp-controller="Itinerary"
+               asp-action="Create"
+               class="create-itinerary-btn">
+                + Tạo lịch trình
+            </a>
+
+        </div>
+
+
+        <div class="itinerary-list">
+
+            @if (Model.Any())
+            {
+                foreach (var itinerary in Model)
+                {
+                    <div class="itinerary-card">
+
+                        <div class="itinerary-icon">
+                            🗺️
+                        </div>
+
+                        <div class="itinerary-info">
+
+                            <div class="itinerary-status">
+                                @if (itinerary.IsPublic)
+                                {
+                                    <span class="public-status">
+                                        🌎 Công khai
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="private-status">
+                                        🔒 Riêng tư
+                                    </span>
+                                }
+                            </div>
+
+                            <h2>
+                                <a asp-controller="Itinerary"
+                                   asp-action="Details"
+                                   asp-route-id="@itinerary.Id">
+                                    @itinerary.Title
+                                </a>
+                            </h2>
+
+                            <p>
+                                @itinerary.Description
+                            </p>
+
+                            <div class="itinerary-meta">
+
+                                <span>
+                                    📅
+                                    @itinerary.StartDate.ToString("dd/MM/yyyy")
+                                    -
+                                    @itinerary.EndDate.ToString("dd/MM/yyyy")
+                                </span>
+
+                                <span>
+                                    📍 @itinerary.NumberOfLocations địa điểm
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="itinerary-arrow">
+                            <a asp-controller="Itinerary"
+                               asp-action="Details"
+                               asp-route-id="@itinerary.Id">
+                                →
+                            </a>
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-itinerary">
+
+                    <div>🗓️</div>
+
+                    <h2>
+                        Bạn chưa có lịch trình nào
+                    </h2>
+
+                    <p>
+                        Hãy tạo lịch trình đầu tiên cho chuyến đi của bạn.
+                    </p>
+
+                    <a asp-controller="Itinerary"
+                       asp-action="Create"
+                       class="create-itinerary-btn">
+                        + Tạo lịch trình
+                    </a>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</section>

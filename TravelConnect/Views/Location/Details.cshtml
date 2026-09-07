@@ -12,19 +12,23 @@
 
         <!-- BREADCRUMB -->
         <div class="breadcrumb-custom">
-            <a asp-controller="Home" asp-action="Index">
+
+            <a asp-controller="Home"
+               asp-action="Index">
                 Trang chủ
             </a>
 
             <span>›</span>
 
-            <a asp-controller="Location" asp-action="Index">
+            <a asp-controller="Location"
+               asp-action="Index">
                 Địa điểm
             </a>
 
             <span>›</span>
 
             <span>@Model.Name</span>
+
         </div>
 
 
@@ -35,13 +39,27 @@
             <img src="@Model.Image"
                  alt="@Model.Name" />
 
+            <!-- CATEGORY -->
+
             <span class="detail-category">
                 @Model.Category
             </span>
 
-            <button class="detail-favorite">
-                ♡
-            </button>
+
+            <!-- FAVORITE BUTTON -->
+
+            <a asp-controller="Favorite"
+               asp-action="Add"
+               asp-route-id="@Model.Id"
+               asp-route-name="@Model.Name"
+               asp-route-province="@Model.Province"
+               asp-route-image="@Model.Image"
+               asp-route-rating="@Model.Rating"
+               class="detail-favorite">
+
+                ❤️ Lưu địa điểm
+
+            </a>
 
         </div>
 
@@ -50,13 +68,22 @@
 
         <div class="detail-content">
 
+
+            <!-- MAIN CONTENT -->
+
             <div class="detail-main">
 
                 <span class="section-label">
                     @Model.Category.ToUpper()
                 </span>
 
-                <h1>@Model.Name</h1>
+
+                <h1>
+                    @Model.Name
+                </h1>
+
+
+                <!-- META -->
 
                 <div class="detail-meta">
 
@@ -70,12 +97,20 @@
 
                 </div>
 
+
+                <!-- DESCRIPTION -->
+
                 <p class="detail-description">
                     @Model.Description
                 </p>
 
 
-                <h2>Giới thiệu</h2>
+                <!-- INTRODUCTION -->
+
+                <h2>
+                    Giới thiệu
+                </h2>
+
 
                 <p>
                     @Model.Name là một trong những điểm đến được
@@ -85,10 +120,18 @@
                     trình khám phá cá nhân.
                 </p>
 
+
                 <p>
                     Du khách có thể khám phá cảnh quan thiên nhiên,
                     thưởng thức ẩm thực địa phương và tìm hiểu văn
                     hóa đặc trưng của vùng đất này.
+                </p>
+
+
+                <p>
+                    Với cảnh quan đặc sắc và nhiều hoạt động hấp dẫn,
+                    @Model.Name là một lựa chọn phù hợp cho những
+                    chuyến du lịch và khám phá.
                 </p>
 
             </div>
@@ -98,26 +141,51 @@
 
             <aside class="detail-sidebar">
 
+
+                <!-- ACTION BOX -->
+
                 <div class="action-box">
 
                     <h3>
                         Lên kế hoạch chuyến đi
                     </h3>
 
+
                     <p>
                         Thêm địa điểm này vào lịch trình của bạn.
                     </p>
 
-                    <a href="#" class="primary-action">
+
+                    <!-- ADD TO ITINERARY -->
+
+                    <a asp-controller="Itinerary"
+                       asp-action="Index"
+                       class="primary-action">
+
                         🗓️ Thêm vào lịch trình
+
                     </a>
 
-                    <a href="#" class="secondary-action">
+
+                    <!-- FAVORITE -->
+
+                    <a asp-controller="Favorite"
+                       asp-action="Add"
+                       asp-route-id="@Model.Id"
+                       asp-route-name="@Model.Name"
+                       asp-route-province="@Model.Province"
+                       asp-route-image="@Model.Image"
+                       asp-route-rating="@Model.Rating"
+                       class="secondary-action">
+
                         ❤️ Lưu địa điểm
+
                     </a>
 
                 </div>
 
+
+                <!-- RATING BOX -->
 
                 <div class="rating-box">
 
@@ -125,11 +193,67 @@
                         @Model.Rating
                     </span>
 
+
                     <div>
-                        ⭐⭐⭐⭐⭐
+
+                        <div>
+                            ⭐⭐⭐⭐⭐
+                        </div>
+
                         <p>
                             Đánh giá từ cộng đồng
                         </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LOCATION INFO -->
+
+                <div class="location-info-box">
+
+                    <h3>
+                        Thông tin
+                    </h3>
+
+
+                    <div class="info-row">
+
+                        <span>
+                            📍 Tỉnh / Thành
+                        </span>
+
+                        <strong>
+                            @Model.Province
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span>
+                            🏷️ Loại hình
+                        </span>
+
+                        <strong>
+                            @Model.Category
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span>
+                            ⭐ Đánh giá
+                        </span>
+
+                        <strong>
+                            @Model.Rating / 5
+                        </strong>
+
                     </div>
 
                 </div>

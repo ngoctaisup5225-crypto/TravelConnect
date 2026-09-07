@@ -8,8 +8,10 @@
 
     <div class="container">
 
-        <!-- Breadcrumb -->
+        <!-- BREADCRUMB -->
+
         <div class="breadcrumb-custom">
+
             <a asp-controller="Home"
                asp-action="Index">
                 Trang chủ
@@ -25,196 +27,338 @@
             <span>›</span>
 
             <span>@Model.Title</span>
+
         </div>
 
 
-        <div class="post-detail-layout">
+        <!-- POST -->
 
-            <main class="post-detail-main">
+        <article class="post-detail-card">
 
+            <!-- IMAGE -->
+            @if (!string.IsNullOrWhiteSpace(Model.Image))
+            {
                 <div class="post-detail-image">
 
                     <img src="@Model.Image"
                          alt="@Model.Title" />
 
                 </div>
+            }
 
 
-                <div class="post-detail-content">
+            <!-- CONTENT -->
 
-                    <div class="post-location">
-                        📍 @Model.Location
+            <div class="post-detail-content">
+
+                <!-- AUTHOR -->
+
+                <div class="post-detail-author">
+
+                    <div class="author-avatar-large">
+                        👤
                     </div>
 
-                    <h1>
-                        @Model.Title
-                    </h1>
+                    <div>
 
+                        <strong>
+                            @Model.UserName
+                        </strong>
 
-                    <div class="post-detail-author">
-
-                        <div class="author-avatar">
-                            👤
-                        </div>
-
-                        <div>
-                            <strong>@Model.Author</strong>
-
-                            <span>
-                                Đăng ngày
-                                @Model.CreatedAt.ToString("dd/MM/yyyy")
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="post-text">
-
-                        <p>
-                            @Model.Content
-                        </p>
-
-                        <p>
-                            Đây là một trong những chuyến đi mà mình
-                            cảm thấy rất đáng nhớ. Nếu bạn đang có kế
-                            hoạch đến @Model.Location thì chắc chắn
-                            đây là địa điểm đáng để trải nghiệm.
-                        </p>
-
-                        <p>
-                            Hy vọng những chia sẻ này sẽ giúp bạn có
-                            thêm thông tin để chuẩn bị cho chuyến đi
-                            của mình.
-                        </p>
-
-                    </div>
-
-
-                    <div class="post-actions">
-
-                        <button type="button">
-                            ❤️ @Model.Likes
-                        </button>
-
-                        <button type="button">
-                            💬 @Model.Comments bình luận
-                        </button>
-
-                        <button type="button">
-                            🔗 Chia sẻ
-                        </button>
+                        <span>
+                            Đăng ngày
+                            @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </span>
 
                     </div>
 
                 </div>
 
 
-                <!-- Bình luận -->
-                <div class="comments-section">
+                <!-- LOCATION -->
+                @if (!string.IsNullOrWhiteSpace(Model.LocationName))
+                {
+                    <div class="post-detail-location">
 
-                    <h2>
-                        💬 Bình luận (@Model.Comments)
-                    </h2>
-
-                    <div class="comment-box">
-
-                        <textarea placeholder="Chia sẻ suy nghĩ của bạn..."></textarea>
-
-                        <button type="button">
-                            Gửi bình luận
-                        </button>
+                        📍 @Model.LocationName
 
                     </div>
+                }
 
 
-                    <div class="comment-item">
+                <!-- TITLE -->
 
-                        <div class="comment-avatar">
-                            👤
-                        </div>
-
-                        <div class="comment-content">
-
-                            <strong>Người dùng TravelConnect</strong>
-
-                            <span>2 ngày trước</span>
-
-                            <p>
-                                Bài viết rất hữu ích! Mình cũng đang
-                                lên kế hoạch cho chuyến đi này.
-                            </p>
-
-                        </div>
-
-                    </div>
+                <h1>
+                    @Model.Title
+                </h1>
 
 
-                    <div class="comment-item">
+                <!-- CONTENT -->
 
-                        <div class="comment-avatar">
-                            👤
-                        </div>
+                <div class="post-detail-text">
 
-                        <div class="comment-content">
-
-                            <strong>Minh Anh</strong>
-
-                            <span>3 ngày trước</span>
-
-                            <p>
-                                Cảm ơn bạn đã chia sẻ kinh nghiệm nhé ❤️
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </main>
-
-
-            <!-- Sidebar -->
-            <aside class="post-detail-sidebar">
-
-                <div class="detail-community-box">
-
-                    <h3>📍 Địa điểm</h3>
-
-                    <strong>
-                        @Model.Location
-                    </strong>
-
-                    <a asp-controller="Location"
-                       asp-action="Index">
-                        Xem các địa điểm →
-                    </a>
+                    @Model.Content
 
                 </div>
 
 
-                <div class="detail-community-box">
+                <!-- STATS -->
 
-                    <h3>🗓️ Lên kế hoạch</h3>
+                <div class="post-detail-stats">
 
-                    <p>
-                        Muốn đến @Model.Location?
-                        Hãy tạo lịch trình cho chuyến đi của bạn.
-                    </p>
+                    <span>
+                        ❤️ @Model.LikeCount lượt thích
+                    </span>
 
-                    <a asp-controller="Itinerary"
-                       asp-action="Index"
-                       class="plan-button">
-                        Tạo lịch trình
-                    </a>
+                    <span>
+                        💬 @Model.CommentCount bình luận
+                    </span>
 
                 </div>
 
-            </aside>
 
-        </div>
+                <!-- ACTIONS -->
+
+                <div class="post-detail-actions">
+
+                    <button type="button"
+                            class="post-like-button">
+
+                        ❤️ Thích
+
+                    </button>
+
+                    <button type="button"
+                            class="post-comment-button">
+
+                        💬 Bình luận
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <!-- COMMENT SECTION -->
+
+        <section class="comment-section">
+
+            <h2>
+                💬 Bình luận
+            </h2>
+
+            <div class="comment-empty">
+
+                <div>
+                    💭
+                </div>
+
+                <p>
+                    Chưa có bình luận nào.
+                </p>
+
+                <small>
+                    Tính năng bình luận sẽ được phát triển tiếp theo.
+                </small>
+
+            </div>
+
+        </section>
 
     </div>
 
 </section>
+
+
+<style>
+
+    .post-detail-page {
+        padding: 40px 0 80px;
+        background: #f7fafc;
+        min-height: 600px;
+    }
+
+    .post-detail-card {
+        max-width: 900px;
+        margin: 30px auto 40px;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #e6edf3;
+        box-shadow: 0 5px 20px rgba(16, 42, 67, 0.07);
+    }
+
+    .post-detail-image {
+        width: 100%;
+        height: 430px;
+        overflow: hidden;
+    }
+
+        .post-detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .post-detail-content {
+        padding: 35px;
+    }
+
+    .post-detail-author {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .author-avatar-large {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #e8f6fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .post-detail-author strong {
+        display: block;
+        color: #243b53;
+        font-size: 15px;
+    }
+
+    .post-detail-author span {
+        display: block;
+        color: #829ab1;
+        font-size: 13px;
+        margin-top: 3px;
+    }
+
+    .post-detail-location {
+        display: inline-block;
+        padding: 7px 12px;
+        background: #e8f6fa;
+        color: #1687a7;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .post-detail-content h1 {
+        font-size: 36px;
+        line-height: 1.3;
+        color: #102a43;
+        margin: 10px 0 25px;
+    }
+
+    .post-detail-text {
+        color: #486581;
+        font-size: 16px;
+        line-height: 1.9;
+        white-space: pre-line;
+    }
+
+    .post-detail-stats {
+        display: flex;
+        gap: 25px;
+        padding: 20px 0;
+        margin-top: 25px;
+        border-top: 1px solid #edf2f7;
+        border-bottom: 1px solid #edf2f7;
+        color: #627d98;
+        font-size: 14px;
+    }
+
+    .post-detail-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .post-like-button,
+    .post-comment-button {
+        border: none;
+        padding: 11px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .post-like-button {
+        background: #fff0f1;
+        color: #d64550;
+    }
+
+    .post-comment-button {
+        background: #e8f6fa;
+        color: #1687a7;
+    }
+
+    .comment-section {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid #e6edf3;
+    }
+
+        .comment-section h2 {
+            color: #102a43;
+            margin-bottom: 25px;
+        }
+
+    .comment-empty {
+        text-align: center;
+        padding: 35px 20px;
+        color: #627d98;
+    }
+
+        .comment-empty div {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .comment-empty p {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .comment-empty small {
+            color: #829ab1;
+        }
+
+    @@media (max-width: 768px) {
+
+        .post-detail-page {
+            padding-top: 25px;
+        }
+
+        .post-detail-image {
+            height: 280px;
+        }
+
+        .post-detail-content {
+            padding: 22px;
+        }
+
+            .post-detail-content h1 {
+                font-size: 28px;
+            }
+
+        .post-detail-stats {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .comment-section {
+            padding: 22px;
+        }
+    }
+
+</style>

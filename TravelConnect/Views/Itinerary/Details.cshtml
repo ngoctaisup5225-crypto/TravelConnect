@@ -1,0 +1,294 @@
+﻿@model TravelConnect.Models.Itinerary
+
+@{
+    ViewData["Title"] = Model.Title;
+
+    var items = ViewBag.Items as List<TravelConnect.Models.ItineraryItem>
+                ?? new List<TravelConnect.Models.ItineraryItem>();
+}
+
+<section class="itinerary-detail-page">
+
+    <div class="container">
+
+        <!-- Breadcrumb -->
+
+        <div class="breadcrumb-custom">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <a asp-controller="Itinerary"
+               asp-action="Index">
+                Lịch trình
+            </a>
+
+            <span>›</span>
+
+            <span>@Model.Title</span>
+
+        </div>
+
+
+        <!-- Header -->
+
+        <div class="itinerary-detail-header">
+
+            <div>
+
+                @if (Model.IsPublic)
+                {
+                    <span class="public-status">
+                        🌎 Công khai
+                    </span>
+                }
+                else
+                {
+                    <span class="private-status">
+                        🔒 Riêng tư
+                    </span>
+                }
+
+                <h1>
+                    @Model.Title
+                </h1>
+
+                <p>
+                    @Model.Description
+                </p>
+
+            </div>
+
+            <button class="edit-itinerary-btn">
+                ✏️ Chỉnh sửa
+            </button>
+
+        </div>
+
+
+        <div class="itinerary-detail-grid">
+
+            <!-- ==============================
+                 DANH SÁCH NGÀY
+                 ============================== -->
+
+            <main class="itinerary-days">
+
+                @if (items.Any())
+                {
+                    var groupedItems = items
+                        .GroupBy(x => x.Day)
+                        .OrderBy(x => x.Key);
+
+                    foreach (var day in groupedItems)
+                    {
+                        <div class="day-card">
+
+                            <div class="day-header">
+
+                                <div class="day-number">
+                                    @day.Key.Replace("Ngày ", "")
+                                </div>
+
+                                <div>
+
+                                    <h2>
+                                        @day.Key
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+
+                            @foreach (var item in day.OrderBy(x => x.OrderIndex))
+                            {
+                                <div class="day-location">
+
+                                    <div class="location-time">
+                                        @item.Time
+                                    </div>
+
+                                    <div class="location-detail">
+
+                                        <div class="location-title-row">
+
+                                            <strong>
+                                                📍 @item.LocationName
+                                            </strong>
+
+                                            <a asp-controller="Itinerary"
+                                               asp-action="AddLocation"
+                                               asp-route-itineraryId="@Model.Id"
+                                               class="add-location-button">
+                                                + Chọn địa điểm
+                                            </a>
+
+                                        </div>
+
+                                        <p>
+                                            @item.Note
+                                        </p>
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-itinerary-items">
+
+                        <div>
+                            🗺️
+                        </div>
+
+                        <h2>
+                            Chưa có địa điểm
+                        </h2>
+
+                        <p>
+                            Hãy thêm địa điểm vào lịch trình của bạn.
+                        </p>
+
+                    </div>
+                }
+
+            </main>
+
+
+            <!-- ==============================
+                 SIDEBAR
+                 ============================== -->
+
+            <aside class="itinerary-sidebar">
+
+                <div class="itinerary-summary">
+
+                    <h3>
+                        📋 Tổng quan
+                    </h3>
+
+                    <div class="summary-item">
+
+                        <span>
+                            Ngày bắt đầu
+                        </span>
+
+                        <strong>
+                            @Model.StartDate.ToString("dd/MM/yyyy")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <span>
+                            Ngày kết thúc
+                        </span>
+
+                        <strong>
+                            @Model.EndDate.ToString("dd/MM/yyyy")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <span>
+                            Địa điểm
+                        </span>
+
+                        <strong>
+                            @items.Count
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <span>
+                            Trạng thái
+                        </span>
+
+                        @if (Model.IsPublic)
+                        {
+                            <strong>
+                                Công khai
+                            </strong>
+                        }
+                        else
+                        {
+                            <strong>
+                                Riêng tư
+                            </strong>
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <!-- Thêm địa điểm -->
+
+                <div class="itinerary-add-box">
+
+                    <h3>
+                        📍 Thêm địa điểm
+                    </h3>
+
+                    <p>
+                        Tìm và thêm những địa điểm bạn muốn
+                        ghé thăm vào lịch trình.
+                    </p>
+
+                    <a asp-controller="Location"
+                       asp-action="Index"
+                       class="add-location-button">
+                        + Chọn địa điểm
+                    </a>
+
+                </div>
+
+
+                <!-- AI -->
+
+                <div class="itinerary-ai-box">
+
+                    <span>
+                        ✨
+                    </span>
+
+                    <h3>
+                        AI hỗ trợ
+                    </h3>
+
+                    <p>
+                        Để AI gợi ý địa điểm và sắp xếp lịch trình
+                        phù hợp với chuyến đi của bạn.
+                    </p>
+
+                    <a asp-controller="AI"
+                       asp-action="Index">
+                        Khám phá AI →
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>

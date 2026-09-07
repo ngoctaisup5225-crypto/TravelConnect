@@ -1,0 +1,137 @@
+﻿@model List<TravelConnect.Models.Favorite>
+
+@{
+    ViewData["Title"] = "Địa điểm yêu thích";
+}
+
+<section class="favorite-page">
+
+    <div class="container">
+
+        <div class="breadcrumb-custom">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <span>Yêu thích</span>
+
+        </div>
+
+
+        <div class="favorite-header">
+
+            <div>
+
+                <span class="favorite-label">
+                    ❤️ MY TRAVEL
+                </span>
+
+                <h1>
+                    Địa điểm yêu thích
+                </h1>
+
+                <p>
+                    Những nơi bạn muốn khám phá trong tương lai.
+                </p>
+
+            </div>
+
+            <div class="favorite-count">
+                @Model.Count địa điểm
+            </div>
+
+        </div>
+
+
+        @if (Model.Any())
+        {
+            <div class="favorite-grid">
+
+                @foreach (var favorite in Model)
+                {
+                    <div class="favorite-card">
+
+                        <div class="favorite-image">
+
+                            <img src="@favorite.Image"
+                                 alt="@favorite.LocationName" />
+
+                            <span>
+                                ❤️
+                            </span>
+
+                        </div>
+
+
+                        <div class="favorite-info">
+
+                            <h2>
+                                @favorite.LocationName
+                            </h2>
+
+                            <p class="favorite-province">
+                                📍 @favorite.Province
+                            </p>
+
+                            <div class="favorite-rating">
+                                ⭐ @favorite.Rating.ToString("0.0")
+                            </div>
+
+
+                            <div class="favorite-actions">
+
+                                <a asp-controller="Location"
+                                   asp-action="Details"
+                                   asp-route-id="@favorite.LocationId"
+                                   class="view-favorite">
+                                    Xem địa điểm
+                                </a>
+
+                                <a asp-controller="Favorite"
+                                   asp-action="Remove"
+                                   asp-route-id="@favorite.Id"
+                                   class="remove-favorite">
+                                    🗑️
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="empty-favorite">
+
+                <div class="empty-favorite-icon">
+                    ❤️
+                </div>
+
+                <h2>
+                    Chưa có địa điểm yêu thích
+                </h2>
+
+                <p>
+                    Hãy lưu những địa điểm bạn muốn khám phá.
+                </p>
+
+                <a asp-controller="Location"
+                   asp-action="Index"
+                   class="browse-location-btn">
+                    📍 Khám phá địa điểm
+                </a>
+
+            </div>
+        }
+
+    </div>
+
+</section>
