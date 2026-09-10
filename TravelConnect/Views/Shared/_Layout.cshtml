@@ -6,147 +6,716 @@
 
     <title>@ViewData["Title"] - TravelConnect</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/TravelConnect.styles.css" asp-append-version="true" />
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Site CSS -->
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
 
-    <!-- HEADER -->
+    <!-- ================= HEADER ================= -->
     <header class="main-header">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container">
+
+        <div class="container">
+
+            <nav class="navbar navbar-expand-lg">
 
                 <!-- LOGO -->
-                <a class="navbar-brand logo" asp-controller="Home" asp-action="Index">
-                    <span>✈</span> TravelConnect
+                <a class="navbar-brand travel-logo"
+                   asp-controller="Home"
+                   asp-action="Index">
+
+                    <span class="logo-icon">🌍</span>
+                    <span>TravelConnect</span>
+
                 </a>
 
                 <!-- MOBILE BUTTON -->
-                <button class="navbar-toggler" type="button"
+                <button class="navbar-toggler"
+                        type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#mainNavbar">
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+
                     <span class="navbar-toggler-icon"></span>
+
                 </button>
 
-                <!-- MENU -->
-                <div class="collapse navbar-collapse" id="mainNavbar">
 
-                    <ul class="navbar-nav mx-auto">
+                <!-- NAVIGATION -->
+                <div class="collapse navbar-collapse"
+                     id="mainNavbar">
 
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                        <!-- TRANG CHỦ -->
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+
+                            <a asp-controller="Home"
+                               asp-action="Index"
+                               class="nav-link">
+
                                 Trang chủ
+
                             </a>
+
                         </li>
 
+
+                        <!-- ĐỊA ĐIỂM -->
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Location" asp-action="Index">
-                                Địa điểm
+
+                            <a asp-controller="Location"
+                               asp-action="Index"
+                               class="nav-link">
+
+                                📍 Địa điểm
+
                             </a>
+
                         </li>
 
+
+                        <!-- CỘNG ĐỒNG -->
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Post" asp-action="Index">
-                                Cộng đồng
+
+                            <a asp-controller="Post"
+                               asp-action="Index"
+                               class="nav-link">
+
+                                👥 Cộng đồng
+
                             </a>
+
                         </li>
 
+
+                        <!-- LỊCH TRÌNH -->
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Itinerary" asp-action="Index">
-                                Lịch trình
+
+                            <a asp-controller="Itinerary"
+                               asp-action="Index"
+                               class="nav-link">
+
+                                🗺️ Lịch trình
+
                             </a>
+
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Favorite"
-                               asp-action="Index">
-                                ❤️ Yêu thích
-                            </a>
-                        </li>
 
+                        <!-- AI DU LỊCH -->
                         <li class="nav-item">
-                            <a class="nav-link ai-menu" asp-controller="AI" asp-action="Index">
+
+                            <a asp-controller="AI"
+                               asp-action="Index"
+                               class="nav-link ai-nav-link">
+
                                 ✨ AI du lịch
+
                             </a>
+
+                        </li>
+
+
+                        <!-- YÊU THÍCH -->
+                        <li class="nav-item">
+
+                            <a asp-controller="Favorite"
+                               asp-action="Index"
+                               class="nav-link">
+
+                                ❤️ Yêu thích
+
+                            </a>
+
                         </li>
 
                     </ul>
 
-                    <!-- RIGHT MENU -->
-                    <div class="header-actions">
 
-                        <a href="#" class="search-btn">
-                            🔍
-                        </a>
+                    <!-- ================= RIGHT SIDE ================= -->
 
-                        <a href="#" class="login-btn">
-                            Đăng nhập
-                        </a>
+                    <div class="header-right">
 
-                        <a href="#" class="register-btn">
-                            Đăng ký
-                        </a>
+                        <!-- SEARCH -->
+                        <form asp-controller="Location"
+                              asp-action="Index"
+                              method="get"
+                              class="header-search">
+
+                            <input type="text"
+                                   name="search"
+                                   placeholder="Tìm địa điểm..."
+                                   class="search-input" />
+
+                            <button type="submit"
+                                    class="search-button">
+
+                                🔍
+
+                            </button>
+
+                        </form>
+
+
+                        <!-- AUTH -->
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                            <div class="user-area">
+
+                                <span class="user-name">
+
+                                    👋
+                                    @Context.Session.GetString("UserName")
+
+                                </span>
+
+
+                                @if (Context.Session.GetString("UserRole") == "Admin")
+                                {
+                                    <a asp-controller="Admin"
+                                       asp-action="Index"
+                                       class="admin-link">
+
+                                        ⚙️ Admin
+
+                                    </a>
+                                }
+
+
+                                <a asp-controller="Account"
+                                   asp-action="Logout"
+                                   class="logout-link">
+
+                                    Đăng xuất
+
+                                </a>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="auth-buttons">
+
+                                <a asp-controller="Account"
+                                   asp-action="Login"
+                                   class="login-link">
+
+                                    Đăng nhập
+
+                                </a>
+
+                                <a asp-controller="Account"
+                                   asp-action="Register"
+                                   class="register-link">
+
+                                    Đăng ký
+
+                                </a>
+
+                            </div>
+                        }
 
                     </div>
 
                 </div>
-            </div>
-        </nav>
+
+            </nav>
+
+        </div>
+
     </header>
 
 
-    <!-- MAIN CONTENT -->
+    <!-- ================= MAIN ================= -->
+
     <main>
+
         @RenderBody()
+
     </main>
 
 
-    <!-- FOOTER -->
+    <!-- ================= FOOTER ================= -->
+
     <footer class="main-footer">
+
         <div class="container">
 
             <div class="footer-content">
 
-                <div>
-                    <h3>✈ TravelConnect</h3>
+                <!-- ABOUT -->
+                <div class="footer-column">
+
+                    <h4>🌍 TravelConnect</h4>
+
                     <p>
-                        Kết nối cộng đồng yêu thích du lịch,
-                        khám phá những hành trình mới.
+                        Nền tảng kết nối cộng đồng du lịch,
+                        chia sẻ trải nghiệm và khám phá những
+                        địa điểm tuyệt vời.
                     </p>
+
                 </div>
 
-                <div>
+
+                <!-- QUICK LINKS -->
+                <div class="footer-column">
+
                     <h4>Khám phá</h4>
-                    <a href="#">Địa điểm du lịch</a>
-                    <a href="#">Bài viết cộng đồng</a>
-                    <a href="#">Lịch trình</a>
+
+                    <a asp-controller="Location"
+                       asp-action="Index">
+
+                        📍 Địa điểm
+
+                    </a>
+
+                    <a asp-controller="Post"
+                       asp-action="Index">
+
+                        👥 Cộng đồng
+
+                    </a>
+
+                    <a asp-controller="Itinerary"
+                       asp-action="Index">
+
+                        🗺️ Lịch trình
+
+                    </a>
+
+                    <a asp-controller="AI"
+                       asp-action="Index">
+
+                        ✨ AI du lịch
+
+                    </a>
+
                 </div>
 
-                <div>
-                    <h4>Hỗ trợ</h4>
-                    <a href="#">Về chúng tôi</a>
-                    <a href="#">Liên hệ</a>
-                    <a href="#">Điều khoản</a>
+
+                <!-- ACCOUNT -->
+                <div class="footer-column">
+
+                    <h4>Tài khoản</h4>
+
+                    @if (Context.Session.GetInt32("UserId") != null)
+                    {
+                        <a asp-controller="Favorite"
+                           asp-action="Index">
+
+                            ❤️ Yêu thích
+
+                        </a>
+
+                        <a asp-controller="Account"
+                           asp-action="Logout">
+
+                            Đăng xuất
+
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account"
+                           asp-action="Login">
+
+                            Đăng nhập
+
+                        </a>
+
+                        <a asp-controller="Account"
+                           asp-action="Register">
+
+                            Đăng ký
+
+                        </a>
+                    }
+
+                </div>
+
+
+                <!-- CONTACT -->
+                <div class="footer-column">
+
+                    <h4>Liên hệ</h4>
+
+                    <p>📧 support@travelconnect.vn</p>
+
+                    <p>📍 Việt Nam</p>
+
+                    <div class="footer-social">
+
+                        <span>🌐</span>
+                        <span>📘</span>
+                        <span>📷</span>
+
+                    </div>
+
                 </div>
 
             </div>
 
+
             <div class="footer-bottom">
-                © 2026 TravelConnect. All rights reserved.
+
+                <p>
+                    © @DateTime.Now.Year TravelConnect.
+                    All rights reserved.
+                </p>
+
             </div>
 
         </div>
+
     </footer>
 
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- ================= SCRIPTS ================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 </html>
+
+
+<!-- ================= LAYOUT CSS ================= -->
+
+<style>
+
+    /* HEADER */
+
+    .main-header {
+        background: #ffffff;
+        border-bottom: 1px solid #eeeeee;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+
+    .travel-logo {
+        font-size: 22px;
+        font-weight: 700;
+        color: #2563eb !important;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+
+    .logo-icon {
+        font-size: 27px;
+    }
+
+
+    .navbar {
+        min-height: 72px;
+    }
+
+
+    .navbar-nav {
+        gap: 4px;
+    }
+
+
+    .nav-link {
+        color: #374151 !important;
+        font-weight: 500;
+        padding: 10px 12px !important;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+
+        .nav-link:hover {
+            color: #2563eb !important;
+            background: #eff6ff;
+        }
+
+
+    /* AI */
+
+    .ai-nav-link {
+        color: #7c3aed !important;
+        font-weight: 600;
+    }
+
+
+        .ai-nav-link:hover {
+            color: #6d28d9 !important;
+            background: #f5f3ff;
+        }
+
+
+    /* HEADER RIGHT */
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+
+    /* SEARCH */
+
+    .header-search {
+        display: flex;
+        align-items: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #ffffff;
+    }
+
+
+    .search-input {
+        width: 150px;
+        border: none;
+        outline: none;
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+
+    .search-button {
+        border: none;
+        background: #ffffff;
+        padding: 8px 10px;
+        cursor: pointer;
+    }
+
+
+        .search-button:hover {
+            background: #f3f4f6;
+        }
+
+
+    /* USER */
+
+    .user-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        white-space: nowrap;
+    }
+
+
+    .user-name {
+        color: #374151;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+
+    .logout-link {
+        color: #dc2626;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+
+        .logout-link:hover {
+            color: #991b1b;
+        }
+
+
+    /* ADMIN */
+
+    .admin-link {
+        color: #7c3aed !important;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+
+        .admin-link:hover {
+            color: #5b21b6 !important;
+        }
+
+
+    /* AUTH */
+
+    .auth-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+
+    .login-link {
+        color: #374151;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+
+        .login-link:hover {
+            color: #2563eb;
+        }
+
+
+    .register-link {
+        background: #2563eb;
+        color: #ffffff !important;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+
+        .register-link:hover {
+            background: #1d4ed8;
+        }
+
+
+    /* FOOTER */
+
+    .main-footer {
+        background: #111827;
+        color: #d1d5db;
+        margin-top: 60px;
+        padding-top: 45px;
+    }
+
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1.5fr;
+        gap: 40px;
+        padding-bottom: 40px;
+    }
+
+
+    .footer-column h4 {
+        color: #ffffff;
+        margin-bottom: 16px;
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+
+    .footer-column p {
+        color: #9ca3af;
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 8px;
+    }
+
+
+    .footer-column a {
+        display: block;
+        color: #9ca3af;
+        text-decoration: none;
+        margin-bottom: 10px;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+
+        .footer-column a:hover {
+            color: #ffffff;
+        }
+
+
+    .footer-social {
+        display: flex;
+        gap: 12px;
+        font-size: 20px;
+        margin-top: 12px;
+    }
+
+
+    .footer-bottom {
+        border-top: 1px solid #374151;
+        padding: 20px 0;
+        text-align: center;
+    }
+
+
+        .footer-bottom p {
+            margin: 0;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+
+    /* RESPONSIVE */
+
+    @@media (max-width: 1200px) {
+
+        .nav-link {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+
+        .header-search {
+            display: none;
+        }
+    }
+
+
+    @@media (max-width: 991px) {
+
+        .header-right {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 15px 0;
+        }
+
+        .navbar-nav {
+            padding-top: 10px;
+        }
+
+        .user-area {
+            flex-wrap: wrap;
+        }
+
+        .footer-content {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+
+    @@media (max-width: 576px) {
+
+        .footer-content {
+            grid-template-columns: 1fr;
+        }
+
+        .travel-logo {
+            font-size: 19px;
+        }
+    }
+
+</style>

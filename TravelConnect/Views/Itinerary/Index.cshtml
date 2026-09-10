@@ -4,128 +4,715 @@
     ViewData["Title"] = "Lịch trình";
 }
 
-<section class="itinerary-page">
+<section class="itinerary-index-page">
 
     <div class="container">
 
-        <div class="itinerary-header">
+        <!-- =========================
+             BREADCRUMB
+             ========================= -->
+
+        <div class="breadcrumb-custom">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <span>Lịch trình</span>
+
+        </div>
+
+
+        <!-- =========================
+             HEADER
+             ========================= -->
+
+        <div class="itinerary-index-header">
 
             <div>
+
                 <span class="itinerary-label">
-                    🗓️ TRAVEL PLANNER
+                    🗓️ TravelConnect
                 </span>
 
-                <h1>Lịch trình của tôi</h1>
+                <h1>
+                    Lịch trình của tôi
+                </h1>
 
                 <p>
-                    Lên kế hoạch, quản lý và lưu lại những chuyến đi
-                    đáng nhớ của bạn.
+                    Quản lý những chuyến đi và lịch trình
+                    du lịch của bạn.
                 </p>
+
             </div>
+
 
             <a asp-controller="Itinerary"
                asp-action="Create"
                class="create-itinerary-btn">
+
                 + Tạo lịch trình
+
             </a>
 
         </div>
 
 
-        <div class="itinerary-list">
+        <!-- =========================
+             THÔNG BÁO
+             ========================= -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="itinerary-index-alert success">
+                ✅ @TempData["Success"]
+            </div>
+        }
 
-            @if (Model.Any())
-            {
-                foreach (var itinerary in Model)
+        @if (TempData["Error"] != null)
+        {
+            <div class="itinerary-index-alert error">
+                ⚠️ @TempData["Error"]
+            </div>
+        }
+
+
+        <!-- =========================
+             DANH SÁCH
+             ========================= -->
+        @if (Model != null && Model.Any())
+        {
+            <div class="itinerary-grid">
+
+                @foreach (var itinerary in Model)
                 {
                     <div class="itinerary-card">
 
-                        <div class="itinerary-icon">
-                            🗺️
+
+                        <!-- =========================
+                             CARD HEADER
+                             ========================= -->
+
+                        <div class="itinerary-card-header">
+
+                            @if (itinerary.IsPublic)
+                            {
+                                <span class="itinerary-status public">
+                                    🌎 Công khai
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="itinerary-status private">
+                                    🔒 Riêng tư
+                                </span>
+                            }
+
+
+                            <span class="itinerary-date">
+                                @itinerary.CreatedAt.ToString("dd/MM/yyyy")
+                            </span>
+
                         </div>
 
-                        <div class="itinerary-info">
 
-                            <div class="itinerary-status">
-                                @if (itinerary.IsPublic)
-                                {
-                                    <span class="public-status">
-                                        🌎 Công khai
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="private-status">
-                                        🔒 Riêng tư
-                                    </span>
-                                }
-                            </div>
+                        <!-- =========================
+                             CARD CONTENT
+                             ========================= -->
+
+                        <div class="itinerary-card-content">
 
                             <h2>
-                                <a asp-controller="Itinerary"
-                                   asp-action="Details"
-                                   asp-route-id="@itinerary.Id">
-                                    @itinerary.Title
-                                </a>
+                                @itinerary.Title
                             </h2>
 
-                            <p>
-                                @itinerary.Description
-                            </p>
 
-                            <div class="itinerary-meta">
+                            @if (!string.IsNullOrWhiteSpace(itinerary.Description))
+                            {
+                                <p class="itinerary-description">
+                                    @itinerary.Description
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="itinerary-description empty">
+                                    Chưa có mô tả cho lịch trình này.
+                                </p>
+                            }
 
-                                <span>
-                                    📅
-                                    @itinerary.StartDate.ToString("dd/MM/yyyy")
-                                    -
-                                    @itinerary.EndDate.ToString("dd/MM/yyyy")
-                                </span>
 
-                                <span>
-                                    📍 @itinerary.NumberOfLocations địa điểm
-                                </span>
+                            <!-- =========================
+                                 THÔNG TIN
+                                 ========================= -->
+
+                            <div class="itinerary-info">
+
+                                <div class="info-item">
+
+                                    <span class="info-icon">
+                                        📅
+                                    </span>
+
+                                    <div>
+
+                                        <small>
+                                            Thời gian
+                                        </small>
+
+                                        <strong>
+                                            @itinerary.StartDate.ToString("dd/MM/yyyy")
+                                            -
+                                            @itinerary.EndDate.ToString("dd/MM/yyyy")
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <span class="info-icon">
+                                        📍
+                                    </span>
+
+                                    <div>
+
+                                        <small>
+                                            Địa điểm
+                                        </small>
+
+                                        <strong>
+                                            @itinerary.NumberOfLocations địa điểm
+                                        </strong>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
                         </div>
 
-                        <div class="itinerary-arrow">
+
+                        <!-- =========================
+                             CARD ACTIONS
+                             ========================= -->
+
+                        <div class="itinerary-card-actions">
+
+
+                            <!-- XEM CHI TIẾT -->
+
                             <a asp-controller="Itinerary"
                                asp-action="Details"
-                               asp-route-id="@itinerary.Id">
-                                →
+                               asp-route-id="@itinerary.Id"
+                               class="view-itinerary-btn">
+
+                                👁️ Xem chi tiết
+
                             </a>
+
+
+                            <!-- CHỈNH SỬA -->
+
+                            <a asp-controller="Itinerary"
+                               asp-action="Edit"
+                               asp-route-id="@itinerary.Id"
+                               class="edit-itinerary-link">
+
+                                ✏️
+
+                            </a>
+
+
+                            <!-- XÓA -->
+
+                            <a asp-controller="Itinerary"
+                               asp-action="Delete"
+                               asp-route-id="@itinerary.Id"
+                               class="delete-itinerary-link"
+                               onclick="return confirm('Bạn có chắc muốn xóa lịch trình này?');">
+
+                                🗑️
+
+                            </a>
+
                         </div>
 
                     </div>
                 }
-            }
-            else
-            {
-                <div class="no-itinerary">
 
-                    <div>🗓️</div>
+            </div>
+        }
+        else
+        {
+            <!-- =========================
+                 EMPTY STATE
+                 ========================= -->
 
-                    <h2>
-                        Bạn chưa có lịch trình nào
-                    </h2>
+            <div class="itinerary-empty">
 
-                    <p>
-                        Hãy tạo lịch trình đầu tiên cho chuyến đi của bạn.
-                    </p>
-
-                    <a asp-controller="Itinerary"
-                       asp-action="Create"
-                       class="create-itinerary-btn">
-                        + Tạo lịch trình
-                    </a>
-
+                <div class="empty-itinerary-icon">
+                    🗺️
                 </div>
-            }
 
-        </div>
+                <h2>
+                    Bạn chưa có lịch trình nào
+                </h2>
+
+                <p>
+                    Hãy tạo một lịch trình để bắt đầu
+                    lên kế hoạch cho chuyến đi của bạn.
+                </p>
+
+
+                <a asp-controller="Itinerary"
+                   asp-action="Create"
+                   class="empty-create-btn">
+
+                    + Tạo lịch trình đầu tiên
+
+                </a>
+
+            </div>
+        }
+
 
     </div>
 
 </section>
+
+
+<style>
+
+    /* =========================
+           PAGE
+           ========================= */
+
+    .itinerary-index-page {
+        padding: 35px 20px 70px;
+    }
+
+
+        .itinerary-index-page .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+
+    /* =========================
+           HEADER
+           ========================= */
+
+    .itinerary-index-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin: 25px 0 30px;
+    }
+
+
+    .itinerary-label {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    .itinerary-index-header h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+        color: #222;
+    }
+
+
+    .itinerary-index-header p {
+        margin: 0;
+        color: #777;
+    }
+
+
+    /* =========================
+           CREATE BUTTON
+           ========================= */
+
+    .create-itinerary-btn {
+        display: inline-block;
+        padding: 12px 18px;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: 0.2s;
+    }
+
+
+        .create-itinerary-btn:hover {
+            background: #1d4ed8;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================
+           ALERT
+           ========================= */
+
+    .itinerary-index-alert {
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+
+        .itinerary-index-alert.success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #047857;
+        }
+
+
+        .itinerary-index-alert.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+
+    /* =========================
+           GRID
+           ========================= */
+
+    .itinerary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+
+
+    /* =========================
+           CARD
+           ========================= */
+
+    .itinerary-card {
+        overflow: hidden;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.05);
+        transition: 0.2s;
+    }
+
+
+        .itinerary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+        }
+
+
+    /* =========================
+           CARD HEADER
+           ========================= */
+
+    .itinerary-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 18px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+
+    .itinerary-status {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+
+        .itinerary-status.public {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+
+        .itinerary-status.private {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+
+    .itinerary-date {
+        color: #999;
+        font-size: 12px;
+    }
+
+
+    /* =========================
+           CARD CONTENT
+           ========================= */
+
+    .itinerary-card-content {
+        padding: 20px;
+    }
+
+
+        .itinerary-card-content h2 {
+            margin: 0 0 9px;
+            color: #222;
+            font-size: 21px;
+        }
+
+
+    .itinerary-description {
+        min-height: 44px;
+        margin: 0 0 18px;
+        color: #666;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+
+        .itinerary-description.empty {
+            color: #aaa;
+            font-style: italic;
+        }
+
+
+    /* =========================
+           INFO
+           ========================= */
+
+    .itinerary-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px;
+        border-radius: 10px;
+        background: #f8fafc;
+    }
+
+
+    .info-icon {
+        font-size: 20px;
+    }
+
+
+    .info-item div {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+    }
+
+
+    .info-item small {
+        color: #999;
+        font-size: 11px;
+    }
+
+
+    .info-item strong {
+        color: #333;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+
+    /* =========================
+           ACTIONS
+           ========================= */
+
+    .itinerary-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 18px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+
+    .view-itinerary-btn {
+        flex: 1;
+        display: block;
+        padding: 10px;
+        border-radius: 9px;
+        background: #2563eb;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+
+        .view-itinerary-btn:hover {
+            background: #1d4ed8;
+            color: white;
+        }
+
+
+    .edit-itinerary-link,
+    .delete-itinerary-link {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: 0.2s;
+    }
+
+
+    .edit-itinerary-link {
+        background: #f5f3ff;
+        color: #7c3aed;
+    }
+
+
+        .edit-itinerary-link:hover {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+
+    .delete-itinerary-link {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+
+        .delete-itinerary-link:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+
+    /* =========================
+           EMPTY
+           ========================= */
+
+    .itinerary-empty {
+        padding: 80px 20px;
+        text-align: center;
+        border: 1px dashed #d1d5db;
+        border-radius: 18px;
+        background: #fafafa;
+    }
+
+
+    .empty-itinerary-icon {
+        margin-bottom: 15px;
+        font-size: 55px;
+    }
+
+
+    .itinerary-empty h2 {
+        margin: 0 0 8px;
+        color: #333;
+        font-size: 23px;
+    }
+
+
+    .itinerary-empty p {
+        max-width: 500px;
+        margin: 0 auto;
+        color: #777;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+
+    .empty-create-btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 20px;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+
+        .empty-create-btn:hover {
+            background: #1d4ed8;
+            color: white;
+        }
+
+
+    /* =========================
+           RESPONSIVE
+           ========================= */
+
+    @@media (max-width: 850px) {
+
+        .itinerary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 600px) {
+
+        .itinerary-index-page {
+            padding: 25px 12px 50px;
+        }
+
+
+        .itinerary-index-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+            .itinerary-index-header h1 {
+                font-size: 27px;
+            }
+
+
+        .create-itinerary-btn {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+
+        .itinerary-info {
+            grid-template-columns: 1fr;
+        }
+
+
+        .itinerary-card-actions {
+            padding: 12px;
+        }
+    }
+
+</style>

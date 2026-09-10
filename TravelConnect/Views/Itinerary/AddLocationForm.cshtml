@@ -1,0 +1,350 @@
+﻿@{
+    var itinerary =
+        ViewBag.Itinerary as TravelConnect.Models.Itinerary;
+
+    var location =
+        ViewBag.Location as TravelConnect.Models.Location;
+
+    ViewData["Title"] = "Thêm địa điểm";
+}
+
+<div class="add-item-page">
+
+    <div class="add-item-container">
+
+        <!-- Breadcrumb -->
+
+        <div class="breadcrumb-custom">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <a asp-controller="Itinerary"
+               asp-action="Index">
+                Lịch trình
+            </a>
+
+            <span>›</span>
+
+            <span>Thêm địa điểm</span>
+
+        </div>
+
+
+        <!-- Form -->
+
+        <div class="add-item-card">
+
+            <div class="add-item-header">
+
+                <div class="add-item-icon">
+                    📍
+                </div>
+
+
+                <div>
+
+                    <span>
+                        @itinerary?.Title
+                    </span>
+
+                    <h1>
+                        @location?.Name
+                    </h1>
+
+                    <p>
+                        📍 @location?.Province
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form asp-controller="Itinerary"
+                  asp-action="AddLocation"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+
+                <input type="hidden"
+                       name="itineraryId"
+                       value="@itinerary?.Id" />
+
+
+                <input type="hidden"
+                       name="locationId"
+                       value="@location?.Id" />
+
+
+                <!-- Ngày -->
+
+                <div class="form-group">
+
+                    <label>
+                        Ngày
+                    </label>
+
+                    <select name="day"
+                            required>
+
+                        <option value="">
+                            -- Chọn ngày --
+                        </option>
+
+                        @if (itinerary != null)
+                        {
+                            var totalDays =
+                                (itinerary.EndDate.Date -
+                                 itinerary.StartDate.Date).Days + 1;
+
+                            for (int i = 1; i <= totalDays; i++)
+                            {
+                                <option value="Ngày @i">
+                                    Ngày @i
+                                </option>
+                            }
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- Thời gian -->
+
+                <div class="form-group">
+
+                    <label>
+                        Thời gian
+                    </label>
+
+                    <input type="time"
+                           name="time"
+                           value="08:00" />
+
+                </div>
+
+
+                <!-- Ghi chú -->
+
+                <div class="form-group">
+
+                    <label>
+                        Ghi chú
+                    </label>
+
+                    <textarea name="note"
+                              rows="4"
+                              placeholder="Ví dụ: Ăn sáng, tham quan, chụp ảnh..."></textarea>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="form-actions">
+
+                    <a asp-controller="Itinerary"
+                       asp-action="SelectLocation"
+                       asp-route-itineraryId="@itinerary?.Id"
+                       class="cancel-btn">
+                        Hủy
+                    </a>
+
+
+                    <button type="submit"
+                            class="save-btn">
+                        💾 Thêm vào lịch trình
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .add-item-page {
+        padding: 35px 20px 70px;
+    }
+
+
+    .add-item-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+
+    .add-item-card {
+        margin-top: 25px;
+        padding: 28px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+
+    .add-item-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding-bottom: 22px;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+
+    .add-item-icon {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: #eff6ff;
+        font-size: 27px;
+        flex-shrink: 0;
+    }
+
+
+    .add-item-header span {
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    .add-item-header h1 {
+        margin: 4px 0;
+        font-size: 25px;
+        color: #222;
+    }
+
+
+    .add-item-header p {
+        margin: 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+
+            .form-group input:focus,
+            .form-group select:focus,
+            .form-group textarea:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+            }
+
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+
+    .cancel-btn,
+    .save-btn {
+        padding: 11px 17px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+
+    .cancel-btn {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+
+        .cancel-btn:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+
+    .save-btn {
+        border: none;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+    }
+
+
+        .save-btn:hover {
+            background: #1d4ed8;
+        }
+
+
+    @@media (max-width: 600px) {
+
+        .add-item-page {
+            padding: 25px 12px 50px;
+        }
+
+        .add-item-card {
+            padding: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .cancel-btn,
+        .save-btn {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+    }
+
+</style>

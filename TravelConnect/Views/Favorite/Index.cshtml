@@ -4,134 +4,442 @@
     ViewData["Title"] = "Địa điểm yêu thích";
 }
 
-<section class="favorite-page">
+<div class="favorite-page">
 
-    <div class="container">
+    <!-- HEADER -->
+    <div class="favorite-header">
 
-        <div class="breadcrumb-custom">
+        <div>
+            <span class="favorite-badge">
+                ❤️ YÊU THÍCH
+            </span>
 
-            <a asp-controller="Home"
-               asp-action="Index">
-                Trang chủ
-            </a>
+            <h1>Địa điểm yêu thích</h1>
 
-            <span>›</span>
+            <p>
+                Những địa điểm bạn đã lưu để khám phá sau.
+            </p>
+        </div>
 
-            <span>Yêu thích</span>
+        <a asp-controller="Location"
+           asp-action="Index"
+           class="favorite-explore-button">
+            📍 Khám phá địa điểm
+        </a>
 
+    </div>
+
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- SỐ LƯỢNG -->
+        <div class="favorite-count">
+            ❤️ Bạn đang lưu
+            <strong>@Model.Count</strong>
+            địa điểm
         </div>
 
 
-        <div class="favorite-header">
+        <!-- DANH SÁCH -->
+        <div class="favorite-grid">
 
-            <div>
+            @foreach (var favorite in Model)
+            {
+                <div class="favorite-card">
 
-                <span class="favorite-label">
-                    ❤️ MY TRAVEL
-                </span>
+                    <!-- IMAGE -->
+                    <div class="favorite-image">
 
-                <h1>
-                    Địa điểm yêu thích
-                </h1>
+                        <img src="@favorite.Image"
+                             alt="@favorite.LocationName"
+                             onerror="this.src='https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80';" />
 
-                <p>
-                    Những nơi bạn muốn khám phá trong tương lai.
-                </p>
-
-            </div>
-
-            <div class="favorite-count">
-                @Model.Count địa điểm
-            </div>
-
-        </div>
-
-
-        @if (Model.Any())
-        {
-            <div class="favorite-grid">
-
-                @foreach (var favorite in Model)
-                {
-                    <div class="favorite-card">
-
-                        <div class="favorite-image">
-
-                            <img src="@favorite.Image"
-                                 alt="@favorite.LocationName" />
-
-                            <span>
-                                ❤️
-                            </span>
-
+                        <div class="favorite-rating">
+                            ⭐ @favorite.Rating.ToString("0.0")
                         </div>
 
-
-                        <div class="favorite-info">
-
-                            <h2>
-                                @favorite.LocationName
-                            </h2>
-
-                            <p class="favorite-province">
-                                📍 @favorite.Province
-                            </p>
-
-                            <div class="favorite-rating">
-                                ⭐ @favorite.Rating.ToString("0.0")
-                            </div>
+                    </div>
 
 
-                            <div class="favorite-actions">
+                    <!-- CONTENT -->
+                    <div class="favorite-content">
 
-                                <a asp-controller="Location"
-                                   asp-action="Details"
-                                   asp-route-id="@favorite.LocationId"
-                                   class="view-favorite">
-                                    Xem địa điểm
-                                </a>
+                        <span class="favorite-province">
+                            📍 @favorite.Province
+                        </span>
 
-                                <a asp-controller="Favorite"
-                                   asp-action="Remove"
-                                   asp-route-id="@favorite.Id"
-                                   class="remove-favorite">
-                                    🗑️
-                                </a>
+                        <h2>
+                            @favorite.LocationName
+                        </h2>
 
-                            </div>
+
+                        <div class="favorite-actions">
+
+                            <a asp-controller="Location"
+                               asp-action="Details"
+                               asp-route-id="@favorite.LocationId"
+                               class="favorite-view-button">
+                                Xem địa điểm →
+                            </a>
+
+
+                            <a asp-controller="Favorite"
+                               asp-action="Remove"
+                               asp-route-id="@favorite.Id"
+                               class="favorite-remove-button"
+                               onclick="return confirm('Bạn có chắc muốn bỏ địa điểm này khỏi yêu thích không?');">
+                                🗑️
+                            </a>
 
                         </div>
 
                     </div>
-                }
 
-            </div>
-        }
-        else
-        {
-            <div class="empty-favorite">
-
-                <div class="empty-favorite-icon">
-                    ❤️
                 </div>
+            }
 
-                <h2>
-                    Chưa có địa điểm yêu thích
-                </h2>
+        </div>
+    }
+    else
+    {
+        <!-- EMPTY -->
+        <div class="favorite-empty">
 
-                <p>
-                    Hãy lưu những địa điểm bạn muốn khám phá.
-                </p>
-
-                <a asp-controller="Location"
-                   asp-action="Index"
-                   class="browse-location-btn">
-                    📍 Khám phá địa điểm
-                </a>
-
+            <div class="empty-icon">
+                💔
             </div>
+
+            <h2>
+                Chưa có địa điểm yêu thích
+            </h2>
+
+            <p>
+                Hãy khám phá các địa điểm và lưu những nơi
+                bạn muốn ghé thăm.
+            </p>
+
+            <a asp-controller="Location"
+               asp-action="Index"
+               class="favorite-explore-button">
+                📍 Khám phá địa điểm
+            </a>
+
+        </div>
+    }
+
+</div>
+
+
+<style>
+
+    /* =========================================
+           PAGE
+           ========================================= */
+
+    .favorite-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 45px 20px 70px;
+    }
+
+
+    /* =========================================
+           HEADER
+           ========================================= */
+
+    .favorite-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+
+    .favorite-badge {
+        display: inline-block;
+        padding: 7px 14px;
+        margin-bottom: 12px;
+        border-radius: 999px;
+        background: #fff1f2;
+        color: #e11d48;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+
+    .favorite-header h1 {
+        margin: 0 0 8px;
+        font-size: 34px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+
+    .favorite-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 16px;
+    }
+
+
+    .favorite-explore-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: #111827;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: 0.2s ease;
+    }
+
+
+        .favorite-explore-button:hover {
+            color: #ffffff;
+            background: #374151;
+            transform: translateY(-2px);
         }
 
-    </div>
 
-</section>
+    /* =========================================
+           COUNT
+           ========================================= */
+
+    .favorite-count {
+        margin-bottom: 22px;
+        padding: 14px 18px;
+        border-radius: 14px;
+        background: #fff7f8;
+        color: #6b7280;
+        border: 1px solid #ffe4e6;
+    }
+
+
+        .favorite-count strong {
+            color: #e11d48;
+            font-size: 18px;
+        }
+
+
+    /* =========================================
+           GRID
+           ========================================= */
+
+    .favorite-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+    }
+
+
+    /* =========================================
+           CARD
+           ========================================= */
+
+    .favorite-card {
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        transition: 0.2s ease;
+    }
+
+
+        .favorite-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.10);
+        }
+
+
+    /* =========================================
+           IMAGE
+           ========================================= */
+
+    .favorite-image {
+        position: relative;
+        height: 210px;
+        overflow: hidden;
+    }
+
+
+        .favorite-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+
+    .favorite-card:hover .favorite-image img {
+        transform: scale(1.05);
+    }
+
+
+    .favorite-rating {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.95);
+        color: #111827;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================
+           CONTENT
+           ========================================= */
+
+    .favorite-content {
+        padding: 20px;
+    }
+
+
+    .favorite-province {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+
+    .favorite-content h2 {
+        margin: 7px 0 18px;
+        color: #111827;
+        font-size: 21px;
+        font-weight: 750;
+    }
+
+
+    /* =========================================
+           ACTIONS
+           ========================================= */
+
+    .favorite-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+
+    .favorite-view-button {
+        flex: 1;
+        padding: 10px 13px;
+        border-radius: 10px;
+        background: #f3f4f6;
+        color: #111827;
+        text-decoration: none;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+
+        .favorite-view-button:hover {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+
+    .favorite-remove-button {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: #fff1f2;
+        color: #e11d48;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+
+        .favorite-remove-button:hover {
+            background: #ffe4e6;
+            color: #be123c;
+        }
+
+
+    /* =========================================
+           EMPTY
+           ========================================= */
+
+    .favorite-empty {
+        padding: 70px 20px;
+        text-align: center;
+        background: #ffffff;
+        border: 1px dashed #d1d5db;
+        border-radius: 20px;
+    }
+
+
+    .empty-icon {
+        margin-bottom: 15px;
+        font-size: 55px;
+    }
+
+
+    .favorite-empty h2 {
+        margin-bottom: 10px;
+        color: #111827;
+        font-size: 25px;
+    }
+
+
+    .favorite-empty p {
+        max-width: 500px;
+        margin: 0 auto 25px;
+        color: #6b7280;
+        line-height: 1.6;
+    }
+
+
+    /* =========================================
+           RESPONSIVE
+           ========================================= */
+
+    @@media (max-width: 950px) {
+
+        .favorite-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .favorite-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .favorite-header h1 {
+                font-size: 29px;
+            }
+
+        .favorite-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 450px) {
+
+        .favorite-page {
+            padding: 30px 15px 50px;
+        }
+
+        .favorite-image {
+            height: 190px;
+        }
+    }
+
+</style>

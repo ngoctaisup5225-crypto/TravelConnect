@@ -1,0 +1,265 @@
+﻿@model TravelConnect.Models.Location
+
+@{
+    ViewData["Title"] = "Sửa địa điểm";
+}
+
+<div class="admin-form-page">
+
+    <div class="admin-form-card">
+
+        <div class="admin-form-header">
+
+            <span class="admin-label">
+                ADMIN PANEL
+            </span>
+
+            <h1>
+                ✏️ Sửa địa điểm
+            </h1>
+
+            <p>
+                Chỉnh sửa thông tin địa điểm.
+            </p>
+
+        </div>
+
+
+        <form asp-controller="Location"
+              asp-action="Edit"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input asp-for="Id"
+                   type="hidden" />
+
+
+            <div class="admin-form-group">
+
+                <label>
+                    Tên địa điểm
+                </label>
+
+                <input asp-for="Name" />
+
+                <span asp-validation-for="Name"
+                      class="admin-validation">
+                </span>
+
+            </div>
+
+
+            <div class="admin-form-group">
+
+                <label>
+                    Tỉnh / Thành phố
+                </label>
+
+                <input asp-for="Province" />
+
+                <span asp-validation-for="Province"
+                      class="admin-validation">
+                </span>
+
+            </div>
+
+
+            <div class="admin-form-group">
+
+                <label>
+                    Danh mục
+                </label>
+
+                <select asp-for="Category">
+
+                    <option value="Biển">
+                        Biển
+                    </option>
+
+                    <option value="Thiên nhiên">
+                        Thiên nhiên
+                    </option>
+
+                    <option value="Núi">
+                        Núi
+                    </option>
+
+                    <option value="Văn hóa">
+                        Văn hóa
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="admin-form-group">
+
+                <label>
+                    Hình ảnh
+                </label>
+
+                <input asp-for="Image" />
+
+            </div>
+
+
+            <div class="admin-form-group">
+
+                <label>
+                    Đánh giá
+                </label>
+
+                <input asp-for="Rating"
+                       type="number"
+                       min="0"
+                       max="5"
+                       step="0.1" />
+
+            </div>
+
+
+            <div class="admin-form-group">
+
+                <label>
+                    Mô tả
+                </label>
+
+                <textarea asp-for="Description"
+                          rows="5">
+                </textarea>
+
+                <span asp-validation-for="Description"
+                      class="admin-validation">
+                </span>
+
+            </div>
+
+
+            <div class="admin-form-buttons">
+
+                <a asp-action="AdminIndex"
+                   class="admin-cancel-button">
+
+                    Hủy
+
+                </a>
+
+                <button type="submit"
+                        class="admin-save-button">
+
+                    💾 Lưu thay đổi
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .admin-form-page {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px 60px;
+    }
+
+    .admin-form-card {
+        background: white;
+        padding: 35px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .admin-form-header {
+        margin-bottom: 30px;
+    }
+
+        .admin-form-header h1 {
+            margin: 6px 0;
+            color: #111827;
+        }
+
+        .admin-form-header p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+    .admin-form-group {
+        margin-bottom: 20px;
+    }
+
+        .admin-form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .admin-form-group input,
+        .admin-form-group select,
+        .admin-form-group textarea {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .admin-form-group textarea {
+            resize: vertical;
+        }
+
+            .admin-form-group input:focus,
+            .admin-form-group select:focus,
+            .admin-form-group textarea:focus {
+                outline: none;
+                border-color: #111827;
+            }
+
+    .admin-validation {
+        display: block;
+        margin-top: 5px;
+        color: #dc2626;
+        font-size: 12px;
+    }
+
+    .admin-form-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .admin-cancel-button,
+    .admin-save-button {
+        padding: 11px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+    }
+
+    .admin-cancel-button {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .admin-save-button {
+        background: #111827;
+        color: white;
+    }
+
+        .admin-save-button:hover {
+            background: #000;
+        }
+
+</style>

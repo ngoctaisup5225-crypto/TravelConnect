@@ -1,133 +1,395 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TravelConnect.Data;
 using TravelConnect.Models;
 
 namespace TravelConnect.Controllers
 {
     public class LocationController : Controller
     {
-        // Danh sách địa điểm mẫu
-        private List<Location> GetLocations()
+        private readonly TravelConnectDbContext _context;
+
+        public LocationController(TravelConnectDbContext context)
         {
-            return new List<Location>
-            {
-                new Location
-                {
-                    Id = 1,
-                    Name = "Đà Nẵng",
-                    Province = "Đà Nẵng",
-                    Category = "Biển",
-                    Description = "Thành phố biển xinh đẹp với những bãi biển nổi tiếng, cầu Rồng và nhiều điểm tham quan hấp dẫn.",
-                    Image = "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1000&q=80",
-                    Rating = 4.8
-                },
-
-                new Location
-                {
-                    Id = 2,
-                    Name = "Đà Lạt",
-                    Province = "Lâm Đồng",
-                    Category = "Thiên nhiên",
-                    Description = "Thành phố ngàn hoa với khí hậu mát mẻ, cảnh quan lãng mạn và nhiều địa điểm check-in nổi tiếng.",
-                    Image = "https://images.unsplash.com/photo-1599707254554-027aeb4deacd?auto=format&fit=crop&w=1000&q=80",
-                    Rating = 4.7
-                },
-
-                new Location
-                {
-                    Id = 3,
-                    Name = "Vịnh Hạ Long",
-                    Province = "Quảng Ninh",
-                    Category = "Biển",
-                    Description = "Di sản thiên nhiên nổi tiếng với hàng nghìn đảo đá vôi và cảnh quan tuyệt đẹp trên biển.",
-                    Image = "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1000&q=80",
-                    Rating = 4.9
-                },
-
-                new Location
-                {
-                    Id = 4,
-                    Name = "Sapa",
-                    Province = "Lào Cai",
-                    Category = "Núi",
-                    Description = "Vùng núi phía Bắc nổi tiếng với ruộng bậc thang, khí hậu mát mẻ và văn hóa đặc sắc của các dân tộc.",
-                    Image = "https://images.unsplash.com/photo-1573270689103-d7a4e42b609a?auto=format&fit=crop&w=1000&q=80",
-                    Rating = 4.6
-                },
-
-                new Location
-                {
-                    Id = 5,
-                    Name = "Phú Quốc",
-                    Province = "Kiên Giang",
-                    Category = "Biển",
-                    Description = "Đảo ngọc nổi tiếng với biển xanh, cát trắng, hoàng hôn đẹp và nhiều hoạt động vui chơi.",
-                    Image = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
-                    Rating = 4.8
-                },
-
-                new Location
-                {
-                    Id = 6,
-                    Name = "Hội An",
-                    Province = "Quảng Nam",
-                    Category = "Văn hóa",
-                    Description = "Phố cổ mang vẻ đẹp truyền thống với những ngôi nhà cổ, đèn lồng và nền văn hóa đặc sắc.",
-                    Image = "https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1000&q=80",
-                    Rating = 4.9
-                }
-            };
+            _context = context;
         }
 
-        // GET: /Location
-        // GET: /Location/Index
-        public IActionResult Index(string search, string category)
+
+        // =====================================================
+        // DANH SÁCH ĐỊA ĐIỂM
+        // =====================================================
+
+        public async Task<IActionResult> Index(
+            string? search,
+            string? category)
         {
-            var locations = GetLocations();
+            var query = _context.Locations
+                .AsQueryable();
+
 
             // Tìm kiếm
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Trim();
 
-                locations = locations
-                    .Where(x =>
-                        x.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                        x.Province.Contains(search, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                query = query.Where(x =>
+                    x.Name.Contains(search) ||
+                    x.Province.Contains(search)
+                );
             }
 
-            // Lọc theo danh mục
-            if (!string.IsNullOrWhiteSpace(category) &&
-                category != "Tất cả")
+
+            // Lọc danh mục
+            if (!string.IsNullOrWhiteSpace(category))
             {
-                locations = locations
-                    .Where(x =>
-                        x.Category.Equals(
-                            category,
-                            StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                query = query.Where(x =>
+                    x.Category == category
+                );
             }
 
-            // Gửi dữ liệu tìm kiếm/lọc về View
+
+            var locations = await query
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+
+
             ViewBag.Search = search;
             ViewBag.Category = category;
+
 
             return View(locations);
         }
 
-        // GET: /Location/Details/1
-        public IActionResult Details(int id)
-        {
-            var locations = GetLocations();
 
-            var location = locations.FirstOrDefault(x => x.Id == id);
+        // =====================================================
+        // CHI TIẾT ĐỊA ĐIỂM
+        // =====================================================
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var location =
+                await _context.Locations
+                .FirstOrDefaultAsync(x => x.Id == id);
+
 
             if (location == null)
             {
                 return NotFound();
             }
 
+
             return View(location);
+        }
+
+
+        // =====================================================
+        // KIỂM TRA ADMIN
+        // =====================================================
+
+        private bool IsAdmin()
+        {
+            return
+                HttpContext.Session.GetString("UserRole")
+                == "Admin";
+        }
+
+
+        private IActionResult? CheckAdmin()
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account"
+                );
+            }
+
+
+            if (!IsAdmin())
+            {
+                return RedirectToAction(
+                    "Index",
+                    "Home"
+                );
+            }
+
+
+            return null;
+        }
+
+
+        // =====================================================
+        // ADMIN - DANH SÁCH ĐỊA ĐIỂM
+        // =====================================================
+
+        public async Task<IActionResult> AdminIndex()
+        {
+            var check = CheckAdmin();
+
+            if (check != null)
+            {
+                return check;
+            }
+
+
+            var locations =
+                await _context.Locations
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+
+
+            return View(locations);
+        }
+
+
+        // =====================================================
+        // ADMIN - CREATE GET
+        // =====================================================
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var check = CheckAdmin();
+
+            if (check != null)
+            {
+                return check;
+            }
+
+
+            return View();
+        }
+
+
+        // =====================================================
+        // ADMIN - CREATE POST
+        // =====================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            Location location)
+        {
+            var check = CheckAdmin();
+
+            if (check != null)
+            {
+                return check;
+            }
+
+
+            if (string.IsNullOrWhiteSpace(location.Name))
+            {
+                ModelState.AddModelError(
+                    "Name",
+                    "Vui lòng nhập tên địa điểm."
+                );
+            }
+
+
+            if (string.IsNullOrWhiteSpace(location.Province))
+            {
+                ModelState.AddModelError(
+                    "Province",
+                    "Vui lòng nhập tỉnh/thành phố."
+                );
+            }
+
+
+            if (string.IsNullOrWhiteSpace(location.Category))
+            {
+                ModelState.AddModelError(
+                    "Category",
+                    "Vui lòng chọn danh mục."
+                );
+            }
+
+
+            if (!ModelState.IsValid)
+            {
+                return View(location);
+            }
+
+
+            // Không tự nhập Id
+            location.Id = 0;
+
+
+            _context.Locations.Add(location);
+
+
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToAction(
+                "AdminIndex"
+            );
+        }
+
+
+        // =====================================================
+        // ADMIN - EDIT GET
+        // =====================================================
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var check = CheckAdmin();
+
+            if (check != null)
+            {
+                return check;
+            }
+
+
+            var location =
+                await _context.Locations
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+
+            return View(location);
+        }
+
+
+        // =====================================================
+        // ADMIN - EDIT POST
+        // =====================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            int id,
+            Location location)
+        {
+            var check = CheckAdmin();
+
+            if (check != null)
+            {
+                return check;
+            }
+
+
+            if (id != location.Id)
+            {
+                return NotFound();
+            }
+
+
+            if (string.IsNullOrWhiteSpace(location.Name))
+            {
+                ModelState.AddModelError(
+                    "Name",
+                    "Vui lòng nhập tên địa điểm."
+                );
+            }
+
+
+            if (string.IsNullOrWhiteSpace(location.Province))
+            {
+                ModelState.AddModelError(
+                    "Province",
+                    "Vui lòng nhập tỉnh/thành phố."
+                );
+            }
+
+
+            if (string.IsNullOrWhiteSpace(location.Category))
+            {
+                ModelState.AddModelError(
+                    "Category",
+                    "Vui lòng chọn danh mục."
+                );
+            }
+
+
+            if (!ModelState.IsValid)
+            {
+                return View(location);
+            }
+
+
+            var existingLocation =
+                await _context.Locations
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+
+            if (existingLocation == null)
+            {
+                return NotFound();
+            }
+
+
+            existingLocation.Name =
+                location.Name.Trim();
+
+            existingLocation.Province =
+                location.Province.Trim();
+
+            existingLocation.Category =
+                location.Category.Trim();
+
+            existingLocation.Description =
+                location.Description ?? "";
+
+            existingLocation.Image =
+                location.Image ?? "";
+
+            existingLocation.Rating =
+                location.Rating;
+
+
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToAction(
+                "AdminIndex"
+            );
+        }
+
+
+        // =====================================================
+        // ADMIN - DELETE
+        // =====================================================
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var check = CheckAdmin();
+
+            if (check != null)
+            {
+                return check;
+            }
+
+
+            var location =
+                await _context.Locations
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+
+            if (location != null)
+            {
+                _context.Locations.Remove(
+                    location
+                );
+
+                await _context.SaveChangesAsync();
+            }
+
+
+            return RedirectToAction(
+                "AdminIndex"
+            );
         }
     }
 }

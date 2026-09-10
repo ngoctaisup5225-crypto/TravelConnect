@@ -1,0 +1,794 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="admin-page">
+
+    <!-- HEADER -->
+    <div class="admin-header">
+        <div>
+            <div class="admin-badge">
+                🛠️ ADMIN
+            </div>
+
+            <h1>Dashboard</h1>
+
+            <p>
+                Quản lý và theo dõi hệ thống TravelConnect
+            </p>
+        </div>
+
+        <div class="admin-welcome">
+            👤 Xin chào,
+            <strong>
+                @Context.Session.GetString("UserName")
+            </strong>
+        </div>
+    </div>
+
+
+    <!-- THỐNG KÊ -->
+    <div class="admin-stats">
+
+        <!-- USERS -->
+        <a asp-controller="Admin"
+           asp-action="Users"
+           class="admin-stat-card">
+
+            <div class="stat-icon">
+                👥
+            </div>
+
+            <div class="stat-info">
+                <span>Người dùng</span>
+
+                <strong>
+                    @ViewBag.UserCount
+                </strong>
+            </div>
+
+            <div class="stat-arrow">
+                →
+            </div>
+        </a>
+
+
+        <!-- LOCATIONS -->
+        <a asp-controller="Location"
+           asp-action="AdminIndex"
+           class="admin-stat-card">
+
+            <div class="stat-icon">
+                📍
+            </div>
+
+            <div class="stat-info">
+                <span>Địa điểm</span>
+
+                <strong>
+                    @ViewBag.LocationCount
+                </strong>
+            </div>
+
+            <div class="stat-arrow">
+                →
+            </div>
+        </a>
+
+
+        <!-- POSTS -->
+        <a asp-controller="Admin"
+           asp-action="Posts"
+           class="admin-stat-card">
+
+            <div class="stat-icon">
+                📝
+            </div>
+
+            <div class="stat-info">
+                <span>Bài viết</span>
+
+                <strong>
+                    @ViewBag.PostCount
+                </strong>
+            </div>
+
+            <div class="stat-arrow">
+                →
+            </div>
+        </a>
+
+
+        <!-- COMMENTS -->
+        <a asp-controller="Admin"
+           asp-action="Comments"
+           class="admin-stat-card">
+
+            <div class="stat-icon">
+                💬
+            </div>
+
+            <div class="stat-info">
+                <span>Bình luận</span>
+
+                <strong>
+                    @ViewBag.CommentCount
+                </strong>
+            </div>
+
+            <div class="stat-arrow">
+                →
+            </div>
+        </a>
+
+
+        <!-- FAVORITES -->
+        <a asp-controller="Favorite"
+           asp-action="Index"
+           class="admin-stat-card">
+
+            <div class="stat-icon">
+                ❤️
+            </div>
+
+            <div class="stat-info">
+                <span>Yêu thích</span>
+
+                <strong>
+                    @ViewBag.FavoriteCount
+                </strong>
+            </div>
+
+            <div class="stat-arrow">
+                →
+            </div>
+        </a>
+
+    </div>
+
+
+    <!-- QUẢN LÝ HỆ THỐNG -->
+    <div class="admin-section">
+
+        <div class="section-title">
+            <h2>Quản lý hệ thống</h2>
+
+            <p>
+                Chọn chức năng bạn muốn quản lý
+            </p>
+        </div>
+
+
+        <div class="admin-management-grid">
+
+            <!-- USERS -->
+            <a asp-controller="Admin"
+               asp-action="Users"
+               class="management-card">
+
+                <div class="management-icon">
+                    👥
+                </div>
+
+                <div class="management-content">
+                    <h3>Người dùng</h3>
+
+                    <p>
+                        Xem và quản lý tài khoản người dùng
+                    </p>
+                </div>
+
+                <span class="management-arrow">
+                    →
+                </span>
+            </a>
+
+
+            <!-- LOCATIONS -->
+            <a asp-controller="Location"
+               asp-action="AdminIndex"
+               class="management-card">
+
+                <div class="management-icon">
+                    📍
+                </div>
+
+                <div class="management-content">
+                    <h3>Địa điểm</h3>
+
+                    <p>
+                        Thêm, sửa và xóa địa điểm du lịch
+                    </p>
+                </div>
+
+                <span class="management-arrow">
+                    →
+                </span>
+            </a>
+
+
+            <!-- POSTS -->
+            <a asp-controller="Admin"
+               asp-action="Posts"
+               class="management-card">
+
+                <div class="management-icon">
+                    📝
+                </div>
+
+                <div class="management-content">
+                    <h3>Bài viết</h3>
+
+                    <p>
+                        Quản lý các bài viết trong cộng đồng
+                    </p>
+                </div>
+
+                <span class="management-arrow">
+                    →
+                </span>
+            </a>
+
+
+            <!-- COMMENTS -->
+            <a asp-controller="Admin"
+               asp-action="Comments"
+               class="management-card">
+
+                <div class="management-icon">
+                    💬
+                </div>
+
+                <div class="management-content">
+                    <h3>Bình luận</h3>
+
+                    <p>
+                        Kiểm tra và quản lý bình luận
+                    </p>
+                </div>
+
+                <span class="management-arrow">
+                    →
+                </span>
+            </a>
+
+
+            <!-- FAVORITES -->
+            <a asp-controller="Favorite"
+               asp-action="Index"
+               class="management-card">
+
+                <div class="management-icon">
+                    ❤️
+                </div>
+
+                <div class="management-content">
+                    <h3>Yêu thích</h3>
+
+                    <p>
+                        Theo dõi các địa điểm được người dùng lưu
+                    </p>
+                </div>
+
+                <span class="management-arrow">
+                    →
+                </span>
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- THÔNG TIN ADMIN -->
+    <div class="admin-info-section">
+
+        <div class="admin-info-card">
+
+            <div class="info-icon">
+                🛡️
+            </div>
+
+            <div class="info-content">
+
+                <h3>Tài khoản quản trị</h3>
+
+                <div class="info-row">
+                    <span>Họ tên:</span>
+
+                    <strong>
+                        @Context.Session.GetString("UserName")
+                    </strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Email:</span>
+
+                    <strong>
+                        @Context.Session.GetString("UserEmail")
+                    </strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Vai trò:</span>
+
+                    <strong class="admin-role">
+                        @Context.Session.GetString("UserRole")
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-note-card">
+
+            <div class="note-icon">
+                💡
+            </div>
+
+            <div>
+                <h3>Lưu ý</h3>
+
+                <p>
+                    Các chức năng quản trị chỉ dành cho tài khoản
+                    có quyền Admin.
+                </p>
+
+                <p>
+                    Dữ liệu hiện tại đang được lưu tạm trong bộ nhớ
+                    của ứng dụng.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    /* =========================================
+           ADMIN PAGE
+           ========================================= */
+
+    .admin-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 45px 20px 70px;
+    }
+
+
+    /* =========================================
+           HEADER
+           ========================================= */
+
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 30px;
+        margin-bottom: 35px;
+    }
+
+
+    .admin-badge {
+        display: inline-block;
+        background: #f3e8ff;
+        color: #7c3aed;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+
+    .admin-header h1 {
+        margin: 0 0 8px;
+        font-size: 36px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+
+    .admin-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 16px;
+    }
+
+
+    .admin-welcome {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 14px 18px;
+        color: #6b7280;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
+    }
+
+
+        .admin-welcome strong {
+            color: #111827;
+        }
+
+
+    /* =========================================
+           STATS
+           ========================================= */
+
+    .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 18px;
+        margin-bottom: 50px;
+    }
+
+
+    .admin-stat-card {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-height: 120px;
+        padding: 20px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        text-decoration: none;
+        color: inherit;
+        transition: 0.2s ease;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+    }
+
+
+        .admin-stat-card:hover {
+            transform: translateY(-4px);
+            border-color: #c4b5fd;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.09);
+        }
+
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f3ff;
+        border-radius: 13px;
+        font-size: 23px;
+        flex-shrink: 0;
+    }
+
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+    }
+
+
+        .stat-info span {
+            color: #6b7280;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+
+        .stat-info strong {
+            color: #111827;
+            font-size: 25px;
+            line-height: 1;
+        }
+
+
+    .stat-arrow {
+        margin-left: auto;
+        color: #9ca3af;
+        font-size: 20px;
+    }
+
+
+    /* =========================================
+           SECTION
+           ========================================= */
+
+    .admin-section {
+        margin-bottom: 45px;
+    }
+
+
+    .section-title {
+        margin-bottom: 20px;
+    }
+
+
+        .section-title h2 {
+            margin: 0 0 6px;
+            color: #111827;
+            font-size: 25px;
+            font-weight: 750;
+        }
+
+
+        .section-title p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+
+    /* =========================================
+           MANAGEMENT
+           ========================================= */
+
+    .admin-management-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+
+
+    .management-card {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 22px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        text-decoration: none;
+        color: inherit;
+        transition: 0.2s ease;
+    }
+
+
+        .management-card:hover {
+            transform: translateY(-3px);
+            border-color: #c4b5fd;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+
+
+    .management-icon {
+        width: 58px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f3ff;
+        border-radius: 15px;
+        font-size: 27px;
+        flex-shrink: 0;
+    }
+
+
+    .management-content {
+        flex: 1;
+    }
+
+
+        .management-content h3 {
+            margin: 0 0 5px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+
+        .management-content p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+
+    .management-arrow {
+        color: #9ca3af;
+        font-size: 23px;
+        transition: 0.2s ease;
+    }
+
+
+    .management-card:hover .management-arrow {
+        color: #7c3aed;
+        transform: translateX(4px);
+    }
+
+
+    /* =========================================
+           ADMIN INFO
+           ========================================= */
+
+    .admin-info-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+
+    .admin-info-card,
+    .admin-note-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 25px;
+    }
+
+
+    .admin-info-card {
+        display: flex;
+        gap: 20px;
+    }
+
+
+    .info-icon {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3e8ff;
+        border-radius: 14px;
+        font-size: 25px;
+        flex-shrink: 0;
+    }
+
+
+    .info-content {
+        flex: 1;
+    }
+
+
+        .info-content h3,
+        .admin-note-card h3 {
+            margin: 0 0 18px;
+            color: #111827;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 9px 0;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 14px;
+    }
+
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .info-row span {
+            color: #6b7280;
+        }
+
+
+        .info-row strong {
+            color: #111827;
+            text-align: right;
+            word-break: break-word;
+        }
+
+
+    .admin-role {
+        color: #7c3aed !important;
+    }
+
+
+    .admin-note-card {
+        display: flex;
+        gap: 18px;
+        background: #fafafa;
+    }
+
+
+    .note-icon {
+        font-size: 27px;
+        flex-shrink: 0;
+    }
+
+
+    .admin-note-card h3 {
+        margin-bottom: 10px;
+    }
+
+
+    .admin-note-card p {
+        margin: 0 0 8px;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+
+        .admin-note-card p:last-child {
+            margin-bottom: 0;
+        }
+
+
+    /* =========================================
+           RESPONSIVE
+           ========================================= */
+
+    @@media (max-width: 1100px) {
+
+        .admin-stats {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+
+    @@media (max-width: 800px) {
+
+        .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+
+        .admin-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+
+        .admin-management-grid {
+            grid-template-columns: 1fr;
+        }
+
+
+        .admin-info-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 550px) {
+
+        .admin-page {
+            padding: 30px 15px 50px;
+        }
+
+
+        .admin-header h1 {
+            font-size: 30px;
+        }
+
+
+        .admin-stats {
+            grid-template-columns: 1fr;
+        }
+
+
+        .admin-stat-card {
+            min-height: 95px;
+        }
+
+
+        .admin-info-card {
+            flex-direction: column;
+        }
+
+
+        .info-row {
+            flex-direction: column;
+            gap: 3px;
+        }
+
+
+            .info-row strong {
+                text-align: left;
+            }
+    }
+
+</style>

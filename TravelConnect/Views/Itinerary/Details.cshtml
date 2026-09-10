@@ -3,15 +3,24 @@
 @{
     ViewData["Title"] = Model.Title;
 
-    var items = ViewBag.Items as List<TravelConnect.Models.ItineraryItem>
-                ?? new List<TravelConnect.Models.ItineraryItem>();
+    var items =
+        ViewBag.Items as List<TravelConnect.Models.ItineraryItem>
+        ?? new List<TravelConnect.Models.ItineraryItem>();
+
+    var successMessage =
+        TempData["Success"] as string;
+
+    var errorMessage =
+        TempData["Error"] as string;
 }
 
 <section class="itinerary-detail-page">
 
     <div class="container">
 
-        <!-- Breadcrumb -->
+        <!-- =========================
+             BREADCRUMB
+             ========================= -->
 
         <div class="breadcrumb-custom">
 
@@ -34,7 +43,27 @@
         </div>
 
 
-        <!-- Header -->
+        <!-- =========================
+             THÔNG BÁO
+             ========================= -->
+        @if (!string.IsNullOrWhiteSpace(successMessage))
+        {
+            <div class="itinerary-alert success">
+                ✅ @successMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="itinerary-alert error">
+                ⚠️ @errorMessage
+            </div>
+        }
+
+
+        <!-- =========================
+             HEADER
+             ========================= -->
 
         <div class="itinerary-detail-header">
 
@@ -57,30 +86,80 @@
                     @Model.Title
                 </h1>
 
-                <p>
-                    @Model.Description
-                </p>
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p>
+                        @Model.Description
+                    </p>
+                }
 
             </div>
 
-            <button class="edit-itinerary-btn">
-                ✏️ Chỉnh sửa
-            </button>
+
+            <!-- =========================
+                 CÁC NÚT
+                 ========================= -->
+
+            <div class="itinerary-header-actions">
+
+                <!-- NÚT CHỈNH SỬA -->
+
+                <a asp-controller="Itinerary"
+                   asp-action="Edit"
+                   asp-route-id="@Model.Id"
+                   class="edit-itinerary-btn">
+
+                    ✏️ Chỉnh sửa
+
+                </a>
+
+
+                <!-- NÚT THÊM ĐỊA ĐIỂM -->
+
+                <a asp-controller="Itinerary"
+                   asp-action="SelectLocation"
+                   asp-route-itineraryId="@Model.Id"
+                   class="add-location-header-btn">
+
+                    📍 Thêm địa điểm
+
+                </a>
+
+
+                <!-- NÚT XÓA -->
+
+                <a asp-controller="Itinerary"
+                   asp-action="Delete"
+                   asp-route-id="@Model.Id"
+                   class="delete-itinerary-btn"
+                   onclick="return confirm('Bạn có chắc muốn xóa lịch trình này?');">
+
+                    🗑️ Xóa
+
+                </a>
+
+            </div>
 
         </div>
 
 
+        <!-- =========================
+             CONTENT GRID
+             ========================= -->
+
         <div class="itinerary-detail-grid">
 
-            <!-- ==============================
+
+            <!-- =========================
                  DANH SÁCH NGÀY
-                 ============================== -->
+                 ========================= -->
 
             <main class="itinerary-days">
 
                 @if (items.Any())
                 {
-                    var groupedItems = items
+                    var groupedItems =
+                        items
                         .GroupBy(x => x.Day)
                         .OrderBy(x => x.Key);
 
@@ -88,10 +167,14 @@
                     {
                         <div class="day-card">
 
+                            <!-- DAY HEADER -->
+
                             <div class="day-header">
 
                                 <div class="day-number">
+
                                     @day.Key.Replace("Ngày ", "")
+
                                 </div>
 
                                 <div>
@@ -105,13 +188,23 @@
                             </div>
 
 
+                            <!-- DANH SÁCH ĐỊA ĐIỂM -->
                             @foreach (var item in day.OrderBy(x => x.OrderIndex))
                             {
                                 <div class="day-location">
 
+                                    <!-- THỜI GIAN -->
+
                                     <div class="location-time">
-                                        @item.Time
+
+                                        @(string.IsNullOrWhiteSpace(item.Time)
+                                            ? "--:--"
+                                            : item.Time)
+
                                     </div>
+
+
+                                    <!-- THÔNG TIN -->
 
                                     <div class="location-detail">
 
@@ -121,18 +214,29 @@
                                                 📍 @item.LocationName
                                             </strong>
 
-                                            <a asp-controller="Itinerary"
-                                               asp-action="AddLocation"
-                                               asp-route-itineraryId="@Model.Id"
-                                               class="add-location-button">
-                                                + Chọn địa điểm
-                                            </a>
-
                                         </div>
 
-                                        <p>
-                                            @item.Note
-                                        </p>
+
+                                        @if (!string.IsNullOrWhiteSpace(item.Note))
+                                        {
+                                            <p>
+                                                @item.Note
+                                            </p>
+                                        }
+
+
+                                        <!-- XÓA ĐỊA ĐIỂM -->
+
+                                        <a asp-controller="Itinerary"
+                                           asp-action="RemoveLocation"
+                                           asp-route-id="@item.Id"
+                                           asp-route-itineraryId="@Model.Id"
+                                           class="remove-location-button"
+                                           onclick="return confirm('Bạn có chắc muốn xóa địa điểm này khỏi lịch trình?');">
+
+                                            🗑️ Xóa
+
+                                        </a>
 
                                     </div>
 
@@ -144,9 +248,13 @@
                 }
                 else
                 {
+                    <!-- =========================
+                         EMPTY STATE
+                         ========================= -->
+
                     <div class="no-itinerary-items">
 
-                        <div>
+                        <div class="empty-icon">
                             🗺️
                         </div>
 
@@ -158,23 +266,37 @@
                             Hãy thêm địa điểm vào lịch trình của bạn.
                         </p>
 
+
+                        <a asp-controller="Itinerary"
+                           asp-action="SelectLocation"
+                           asp-route-itineraryId="@Model.Id"
+                           class="empty-add-button">
+
+                            + Thêm địa điểm đầu tiên
+
+                        </a>
+
                     </div>
                 }
 
             </main>
 
 
-            <!-- ==============================
+            <!-- =========================
                  SIDEBAR
-                 ============================== -->
+                 ========================= -->
 
             <aside class="itinerary-sidebar">
+
+
+                <!-- TỔNG QUAN -->
 
                 <div class="itinerary-summary">
 
                     <h3>
                         📋 Tổng quan
                     </h3>
+
 
                     <div class="summary-item">
 
@@ -239,7 +361,41 @@
                 </div>
 
 
-                <!-- Thêm địa điểm -->
+                <!-- =========================
+                     CHỈNH SỬA
+                     ========================= -->
+
+                <div class="itinerary-edit-box">
+
+                    <div class="edit-box-icon">
+                        ✏️
+                    </div>
+
+                    <h3>
+                        Chỉnh sửa lịch trình
+                    </h3>
+
+                    <p>
+                        Thay đổi tên, mô tả, thời gian hoặc
+                        trạng thái công khai của chuyến đi.
+                    </p>
+
+
+                    <a asp-controller="Itinerary"
+                       asp-action="Edit"
+                       asp-route-id="@Model.Id"
+                       class="edit-sidebar-button">
+
+                        ✏️ Chỉnh sửa
+
+                    </a>
+
+                </div>
+
+
+                <!-- =========================
+                     THÊM ĐỊA ĐIỂM
+                     ========================= -->
 
                 <div class="itinerary-add-box">
 
@@ -252,16 +408,22 @@
                         ghé thăm vào lịch trình.
                     </p>
 
-                    <a asp-controller="Location"
-                       asp-action="Index"
+
+                    <a asp-controller="Itinerary"
+                       asp-action="SelectLocation"
+                       asp-route-itineraryId="@Model.Id"
                        class="add-location-button">
+
                         + Chọn địa điểm
+
                     </a>
 
                 </div>
 
 
-                <!-- AI -->
+                <!-- =========================
+                     AI
+                     ========================= -->
 
                 <div class="itinerary-ai-box">
 
@@ -274,13 +436,16 @@
                     </h3>
 
                     <p>
-                        Để AI gợi ý địa điểm và sắp xếp lịch trình
-                        phù hợp với chuyến đi của bạn.
+                        Để AI gợi ý địa điểm và sắp xếp
+                        lịch trình phù hợp với chuyến đi.
                     </p>
+
 
                     <a asp-controller="AI"
                        asp-action="Index">
+
                         Khám phá AI →
+
                     </a>
 
                 </div>
@@ -292,3 +457,253 @@
     </div>
 
 </section>
+
+
+<style>
+
+    /* =========================
+           THÔNG BÁO
+           ========================= */
+
+    .itinerary-alert {
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+
+        .itinerary-alert.success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #047857;
+        }
+
+
+        .itinerary-alert.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+
+    /* =========================
+           HEADER ACTIONS
+           ========================= */
+
+    .itinerary-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+
+    /* =========================
+           NÚT CHỈNH SỬA
+           ========================= */
+
+    .edit-itinerary-btn {
+        display: inline-block;
+        padding: 11px 17px;
+        border-radius: 10px;
+        background: #7c3aed;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+
+        .edit-itinerary-btn:hover {
+            background: #6d28d9;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================
+           NÚT THÊM ĐỊA ĐIỂM
+           ========================= */
+
+    .add-location-header-btn {
+        display: inline-block;
+        padding: 11px 17px;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+
+        .add-location-header-btn:hover {
+            background: #1d4ed8;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================
+           NÚT XÓA LỊCH TRÌNH
+           ========================= */
+
+    .delete-itinerary-btn {
+        display: inline-block;
+        padding: 11px 17px;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #dc2626;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+
+        .delete-itinerary-btn:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+
+    /* =========================
+           XÓA ĐỊA ĐIỂM
+           ========================= */
+
+    .remove-location-button {
+        display: inline-block;
+        margin-top: 8px;
+        color: #dc2626;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+
+        .remove-location-button:hover {
+            text-decoration: underline;
+        }
+
+
+    /* =========================
+           EMPTY
+           ========================= */
+
+    .empty-icon {
+        font-size: 50px;
+        margin-bottom: 12px;
+    }
+
+
+    .empty-add-button {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 11px 18px;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+
+        .empty-add-button:hover {
+            background: #1d4ed8;
+            color: white;
+        }
+
+
+    /* =========================
+           BOX CHỈNH SỬA
+           ========================= */
+
+    .itinerary-edit-box {
+        padding: 20px;
+        margin-top: 20px;
+        border: 1px solid #ddd6fe;
+        border-radius: 14px;
+        background: #faf5ff;
+    }
+
+
+    .edit-box-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+
+    .itinerary-edit-box h3 {
+        margin: 0 0 8px;
+        color: #4c1d95;
+        font-size: 18px;
+    }
+
+
+    .itinerary-edit-box p {
+        margin: 0 0 15px;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+
+    .edit-sidebar-button {
+        display: block;
+        padding: 11px;
+        border-radius: 10px;
+        background: #7c3aed;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+
+        .edit-sidebar-button:hover {
+            background: #6d28d9;
+            color: white;
+        }
+
+
+    /* =========================
+           MOBILE
+           ========================= */
+
+    @@media (max-width: 900px) {
+
+        .itinerary-detail-header {
+            align-items: flex-start;
+        }
+
+        .itinerary-header-actions {
+            width: 100%;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .itinerary-header-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+
+        .edit-itinerary-btn,
+        .add-location-header-btn,
+        .delete-itinerary-btn {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+    }
+
+</style>

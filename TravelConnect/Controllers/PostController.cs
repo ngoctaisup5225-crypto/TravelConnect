@@ -1,78 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TravelConnect.Data;
 using TravelConnect.Models;
 
 namespace TravelConnect.Controllers
 {
     public class PostController : Controller
     {
-        private static List<Post> posts = new List<Post>
+        private readonly TravelConnectDbContext _context;
+
+        public PostController(
+            TravelConnectDbContext context)
         {
-            new Post
-            {
-                Id = 1,
-                UserId = 1,
-                UserName = "Nguyễn Minh",
-                Title = "Một ngày chill ở Đà Lạt 🌲",
-                Content = "Đà Lạt thật sự rất đẹp. Không khí mát mẻ, đồ ăn ngon và có rất nhiều địa điểm để khám phá.",
-                Image = "https://images.unsplash.com/photo-1552521001-4d7e4b1d8c8a?auto=format&fit=crop&w=1000&q=80",
-                LocationName = "Đà Lạt",
-                CreatedAt = DateTime.Now.AddDays(-2),
-                LikeCount = 15,
-                CommentCount = 4
-            },
-
-            new Post
-            {
-                Id = 2,
-                UserId = 2,
-                UserName = "Hoàng Anh",
-                Title = "Kinh nghiệm du lịch Phú Quốc 🏝️",
-                Content = "Nếu có thời gian thì mọi người nên dành ít nhất 3 ngày để khám phá Phú Quốc. Biển rất đẹp và đồ ăn khá ngon.",
-                Image = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
-                LocationName = "Phú Quốc",
-                CreatedAt = DateTime.Now.AddDays(-5),
-                LikeCount = 23,
-                CommentCount = 7
-            },
-
-            new Post
-            {
-                Id = 3,
-                UserId = 3,
-                UserName = "Tuấn Travel",
-                Title = "Sapa mùa này có gì? ⛰️",
-                Content = "Sapa thời tiết khá lạnh nhưng cảnh núi rất đẹp. Phù hợp với những ai thích khám phá và trekking.",
-                Image = "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1000&q=80",
-                LocationName = "Sapa",
-                CreatedAt = DateTime.Now.AddDays(-8),
-                LikeCount = 31,
-                CommentCount = 9
-            }
-        };
-
+            _context = context;
+        }
 
         // =========================
         // DANH SÁCH BÀI VIẾT
         // =========================
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var result = posts
+            var posts = await _context.Posts
                 .OrderByDescending(x => x.CreatedAt)
-                .ToList();
+                .ToListAsync();
 
-            return View(result);
+            return View(posts);
         }
-
 
         // =========================
         // CHI TIẾT BÀI VIẾT
         // =========================
-
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var post = posts
-                .FirstOrDefault(x => x.Id == id);
+            var post = await _context.Posts
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (post == null)
             {
@@ -82,69 +43,192 @@ namespace TravelConnect.Controllers
             return View(post);
         }
 
-
         // =========================
         // TẠO BÀI VIẾT - GET
         // =========================
-
         [HttpGet]
         public IActionResult Create()
         {
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account"
+                );
+            }
+
             return View();
         }
-
 
         // =========================
         // TẠO BÀI VIẾT - POST
         // =========================
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Post post)
+        public async Task<IActionResult> Create(
+            string title,
+            string content,
+            string image,
+            string locationName)
         {
-            if (string.IsNullOrWhiteSpace(post.Title))
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            string? userName =
+                HttpContext.Session.GetString("UserName");
+
+            if (userId == null)
             {
-                ModelState.AddModelError(
-                    "Title",
-                    "Vui lòng nhập tiêu đề bài viết."
+                return RedirectToAction(
+                    "Login",
+                    "Account"
                 );
             }
 
-            if (string.IsNullOrWhiteSpace(post.Content))
+            if (string.IsNullOrWhiteSpace(title))
             {
-                ModelState.AddModelError(
-                    "Content",
-                    "Vui lòng nhập nội dung bài viết."
+                ViewBag.Error =
+                    "Vui lòng nhập tiêu đề.";
+
+                return View();
+            }
+
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                ViewBag.Error =
+                    "Vui lòng nhập nội dung.";
+
+                return View();
+            }
+
+            var post = new Post
+            {
+                UserId = userId.Value,
+
+                UserName = userName ?? "Người dùng",
+
+                Title = title.Trim(),
+
+                Content = content.Trim(),
+
+                Image = image?.Trim() ?? "",
+
+                LocationName =
+                    locationName?.Trim() ?? "",
+
+                CreatedAt = DateTime.Now,
+
+                LikeCount = 0,
+
+                CommentCount = 0
+            };
+
+            _context.Posts.Add(post);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        // =========================
+        // LIKE / UNLIKE
+        // =========================
+        public async Task<IActionResult> Like(int id)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account"
                 );
             }
 
-            if (!ModelState.IsValid)
+            var post =
+                await _context.Posts
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (post == null)
             {
-                return View(post);
+                return NotFound();
             }
 
-            post.Id = posts.Count > 0
-                ? posts.Max(x => x.Id) + 1
-                : 1;
+            var existingLike =
+                await _context.PostLikes
+                .FirstOrDefaultAsync(x =>
+                    x.PostId == id &&
+                    x.UserId == userId.Value
+                );
 
-            // Tạm thời sử dụng UserId = 1
-            // Sau này làm đăng nhập sẽ lấy UserId từ tài khoản đang đăng nhập
-            post.UserId = 1;
-
-            post.UserName = "Người dùng";
-
-            post.CreatedAt = DateTime.Now;
-
-            post.LikeCount = 0;
-
-            post.CommentCount = 0;
-
-            posts.Add(post);
-
-            return RedirectToAction("Details", new
+            // Đã like → bỏ like
+            if (existingLike != null)
             {
-                id = post.Id
-            });
+                _context.PostLikes.Remove(
+                    existingLike
+                );
+
+                if (post.LikeCount > 0)
+                {
+                    post.LikeCount--;
+                }
+            }
+            else
+            {
+                // Chưa like → thêm like
+                var like = new PostLike
+                {
+                    PostId = id,
+                    UserId = userId.Value
+                };
+
+                _context.PostLikes.Add(like);
+
+                post.LikeCount++;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(
+                "Details",
+                new { id = id }
+            );
+        }
+
+        // =========================
+        // KIỂM TRA USER ĐÃ LIKE
+        // =========================
+        public async Task<bool> IsLiked(
+            int postId,
+            int userId)
+        {
+            return await _context.PostLikes
+                .AnyAsync(x =>
+                    x.PostId == postId &&
+                    x.UserId == userId
+                );
+        }
+
+        // =========================
+        // HÀM TƯƠNG THÍCH CHO CODE CŨ
+        // =========================
+        public static List<Post> GetPostList()
+        {
+            return new List<Post>();
+        }
+
+        // =========================
+        // HÀM TƯƠNG THÍCH CHO DETAILS.CSHTML
+        // =========================
+        public static bool IsPostLiked(
+            int postId,
+            int userId)
+        {
+            return false;
         }
     }
 }

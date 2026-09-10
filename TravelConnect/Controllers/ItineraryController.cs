@@ -1,246 +1,79 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TravelConnect.Data;
 using TravelConnect.Models;
 
 namespace TravelConnect.Controllers
 {
     public class ItineraryController : Controller
     {
+        private readonly TravelConnectDbContext _context;
+
+        public ItineraryController(TravelConnectDbContext context)
+        {
+            _context = context;
+        }
+
+
+        // ==============================
+        // KIỂM TRA ĐĂNG NHẬP
+        // ==============================
+
+        private int? GetCurrentUserId()
+        {
+            return HttpContext.Session.GetInt32("UserId");
+        }
+
+
         // ==============================
         // DANH SÁCH LỊCH TRÌNH
         // ==============================
 
-        private static List<Itinerary> itineraries = new List<Itinerary>
+        public async Task<IActionResult> Index()
         {
-            new Itinerary
-            {
-                Id = 1,
-                UserId = 1,
-                Title = "Khám phá Đà Nẵng 3 ngày 2 đêm",
-                Description = "Lịch trình khám phá những địa điểm nổi bật tại Đà Nẵng.",
-                StartDate = new DateTime(2026, 9, 10),
-                EndDate = new DateTime(2026, 9, 12),
-                CreatedAt = new DateTime(2026, 8, 25),
-                IsPublic = true,
-                NumberOfLocations = 7
-            },
+            int? userId = GetCurrentUserId();
 
-            new Itinerary
+            if (userId == null)
             {
-                Id = 2,
-                UserId = 1,
-                Title = "Đà Lạt chill 2 ngày",
-                Description = "Một chuyến đi ngắn để nghỉ ngơi và khám phá Đà Lạt.",
-                StartDate = new DateTime(2026, 10, 5),
-                EndDate = new DateTime(2026, 10, 6),
-                CreatedAt = new DateTime(2026, 8, 28),
-                IsPublic = true,
-                NumberOfLocations = 5
-            },
-
-            new Itinerary
-            {
-                Id = 3,
-                UserId = 1,
-                Title = "Phú Quốc 4 ngày 3 đêm",
-                Description = "Khám phá biển đảo và những địa điểm nổi tiếng ở Phú Quốc.",
-                StartDate = new DateTime(2026, 11, 1),
-                EndDate = new DateTime(2026, 11, 4),
-                CreatedAt = new DateTime(2026, 8, 30),
-                IsPublic = false,
-                NumberOfLocations = 9
+                return RedirectToAction("Login", "Account");
             }
-        };
 
+            var itineraries = await _context.Itineraries
+                .Where(x => x.UserId == userId.Value)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
 
-        // ==============================
-        // DANH SÁCH ĐỊA ĐIỂM TRONG LỊCH TRÌNH
-        // ==============================
-
-        private static List<ItineraryItem> itineraryItems = new List<ItineraryItem>
-        {
-            // ==========================
-            // LỊCH TRÌNH 1 - ĐÀ NẴNG
-            // ==========================
-
-            new ItineraryItem
-            {
-                Id = 1,
-                ItineraryId = 1,
-                LocationId = 1,
-                LocationName = "Bán đảo Sơn Trà",
-                Day = "Ngày 1",
-                Time = "08:00",
-                Note = "Tham quan và ngắm cảnh biển từ bán đảo Sơn Trà.",
-                OrderIndex = 1
-            },
-
-            new ItineraryItem
-            {
-                Id = 2,
-                ItineraryId = 1,
-                LocationId = 1,
-                LocationName = "Biển Mỹ Khê",
-                Day = "Ngày 1",
-                Time = "14:00",
-                Note = "Tắm biển và nghỉ ngơi.",
-                OrderIndex = 2
-            },
-
-            new ItineraryItem
-            {
-                Id = 3,
-                ItineraryId = 1,
-                LocationId = 1,
-                LocationName = "Cầu Rồng",
-                Day = "Ngày 1",
-                Time = "19:00",
-                Note = "Tham quan Cầu Rồng và khu vực trung tâm thành phố.",
-                OrderIndex = 3
-            },
-
-            new ItineraryItem
-            {
-                Id = 4,
-                ItineraryId = 1,
-                LocationId = 1,
-                LocationName = "Bà Nà Hills",
-                Day = "Ngày 2",
-                Time = "08:00",
-                Note = "Khám phá Bà Nà Hills và Cầu Vàng.",
-                OrderIndex = 4
-            },
-
-            new ItineraryItem
-            {
-                Id = 5,
-                ItineraryId = 1,
-                LocationId = 1,
-                LocationName = "Chợ đêm Sơn Trà",
-                Day = "Ngày 2",
-                Time = "19:00",
-                Note = "Ăn uống và mua sắm tại chợ đêm.",
-                OrderIndex = 5
-            },
-
-            new ItineraryItem
-            {
-                Id = 6,
-                ItineraryId = 1,
-                LocationId = 1,
-                LocationName = "Ngũ Hành Sơn",
-                Day = "Ngày 3",
-                Time = "08:30",
-                Note = "Tham quan danh thắng Ngũ Hành Sơn.",
-                OrderIndex = 6
-            },
-
-            new ItineraryItem
-            {
-                Id = 7,
-                ItineraryId = 1,
-                LocationId = 6,
-                LocationName = "Phố cổ Hội An",
-                Day = "Ngày 3",
-                Time = "15:00",
-                Note = "Khám phá phố cổ Hội An và thưởng thức ẩm thực địa phương.",
-                OrderIndex = 7
-            },
-
-
-            // ==========================
-            // LỊCH TRÌNH 2 - ĐÀ LẠT
-            // ==========================
-
-            new ItineraryItem
-            {
-                Id = 8,
-                ItineraryId = 2,
-                LocationId = 2,
-                LocationName = "Hồ Xuân Hương",
-                Day = "Ngày 1",
-                Time = "08:00",
-                Note = "Đi dạo quanh hồ và ngắm cảnh.",
-                OrderIndex = 1
-            },
-
-            new ItineraryItem
-            {
-                Id = 9,
-                ItineraryId = 2,
-                LocationId = 2,
-                LocationName = "Quảng trường Lâm Viên",
-                Day = "Ngày 1",
-                Time = "14:00",
-                Note = "Check-in và tham quan quảng trường.",
-                OrderIndex = 2
-            },
-
-            new ItineraryItem
-            {
-                Id = 10,
-                ItineraryId = 2,
-                LocationId = 2,
-                LocationName = "Chợ Đà Lạt",
-                Day = "Ngày 1",
-                Time = "19:00",
-                Note = "Khám phá ẩm thực đường phố.",
-                OrderIndex = 3
-            },
-
-            new ItineraryItem
-            {
-                Id = 11,
-                ItineraryId = 2,
-                LocationId = 2,
-                LocationName = "Đồi chè Cầu Đất",
-                Day = "Ngày 2",
-                Time = "08:00",
-                Note = "Ngắm cảnh và chụp ảnh.",
-                OrderIndex = 4
-            },
-
-            new ItineraryItem
-            {
-                Id = 12,
-                ItineraryId = 2,
-                LocationId = 2,
-                LocationName = "Thác Datanla",
-                Day = "Ngày 2",
-                Time = "14:00",
-                Note = "Tham quan thác và trải nghiệm các hoạt động.",
-                OrderIndex = 5
-            }
-        };
-
-
-        // ==============================
-        // INDEX
-        // ==============================
-
-        public IActionResult Index()
-        {
             return View(itineraries);
         }
 
 
         // ==============================
-        // DETAILS
+        // CHI TIẾT LỊCH TRÌNH
         // ==============================
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var itinerary = itineraries
-                .FirstOrDefault(x => x.Id == id);
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var itinerary = await _context.Itineraries
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.UserId == userId.Value);
 
             if (itinerary == null)
             {
                 return NotFound();
             }
 
-            var items = itineraryItems
-                .Where(x => x.ItineraryId == id)
+            var items = await _context.ItineraryItems
+                .Where(x => x.ItineraryId == itinerary.Id)
                 .OrderBy(x => x.OrderIndex)
-                .ToList();
+                .ToListAsync();
 
             ViewBag.Items = items;
 
@@ -249,140 +82,535 @@ namespace TravelConnect.Controllers
 
 
         // ==============================
-        // CREATE - GET
+        // TẠO LỊCH TRÌNH - GET
         // ==============================
 
+        [HttpGet]
         public IActionResult Create()
         {
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View();
         }
 
 
         // ==============================
-        // CREATE - POST
+        // TẠO LỊCH TRÌNH - POST
         // ==============================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Itinerary itinerary)
+        public async Task<IActionResult> Create(
+            string title,
+            string description,
+            DateTime startDate,
+            DateTime endDate,
+            bool isPublic)
         {
-            if (itinerary.StartDate > itinerary.EndDate)
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
             {
-                ModelState.AddModelError(
-                    "EndDate",
-                    "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu."
-                );
+                return RedirectToAction("Login", "Account");
             }
 
-            if (!ModelState.IsValid)
+
+            // Kiểm tra tên
+
+            if (string.IsNullOrWhiteSpace(title))
             {
-                return View(itinerary);
+                ViewBag.Error =
+                    "Vui lòng nhập tên lịch trình.";
+
+                return View();
             }
 
-            itinerary.Id = itineraries.Count > 0
-                ? itineraries.Max(x => x.Id) + 1
-                : 1;
 
-            itinerary.UserId = 1;
-            itinerary.CreatedAt = DateTime.Now;
-            itinerary.NumberOfLocations = 0;
+            // Kiểm tra ngày
 
-            itineraries.Add(itinerary);
+            if (endDate.Date < startDate.Date)
+            {
+                ViewBag.Error =
+                    "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.";
+
+                return View();
+            }
+
+
+            var itinerary = new Itinerary
+            {
+                UserId = userId.Value,
+
+                Title = title.Trim(),
+
+                Description =
+                    description?.Trim() ?? "",
+
+                StartDate = startDate,
+
+                EndDate = endDate,
+
+                CreatedAt = DateTime.Now,
+
+                IsPublic = isPublic,
+
+                NumberOfLocations = 0
+            };
+
+
+            _context.Itineraries.Add(itinerary);
+
+            await _context.SaveChangesAsync();
+
+
+            TempData["Success"] =
+                "Tạo lịch trình thành công.";
+
 
             return RedirectToAction(
                 "Details",
-                new { id = itinerary.Id }
-            );
+                new { id = itinerary.Id });
         }
 
+
         // ==============================
-        // ADD LOCATION - GET
+        // CHỌN ĐỊA ĐIỂM
         // ==============================
 
         [HttpGet]
-        public IActionResult AddLocation(int itineraryId)
+        public async Task<IActionResult> SelectLocation(
+            int itineraryId)
         {
-            var itinerary = itineraries
-                .FirstOrDefault(x => x.Id == itineraryId);
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            var itinerary = await _context.Itineraries
+                .FirstOrDefaultAsync(x =>
+                    x.Id == itineraryId &&
+                    x.UserId == userId.Value);
 
             if (itinerary == null)
             {
                 return NotFound();
             }
 
+
+            var locations = await _context.Locations
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+
+
             ViewBag.Itinerary = itinerary;
 
-            return View(new ItineraryItem
-            {
-                ItineraryId = itineraryId,
-                Day = "Ngày 1",
-                Time = "08:00"
-            });
+            return View(locations);
         }
 
 
         // ==============================
-        // ADD LOCATION - POST
+        // FORM THÊM ĐỊA ĐIỂM
+        // ==============================
+
+        [HttpGet]
+        public async Task<IActionResult> AddLocationForm(
+            int itineraryId,
+            int locationId)
+        {
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            var itinerary = await _context.Itineraries
+                .FirstOrDefaultAsync(x =>
+                    x.Id == itineraryId &&
+                    x.UserId == userId.Value);
+
+            if (itinerary == null)
+            {
+                return NotFound();
+            }
+
+
+            var location = await _context.Locations
+                .FirstOrDefaultAsync(x =>
+                    x.Id == locationId);
+
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+
+            ViewBag.Itinerary = itinerary;
+
+            ViewBag.Location = location;
+
+
+            return View();
+        }
+
+
+        // ==============================
+        // THÊM ĐỊA ĐIỂM
         // ==============================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddLocation(ItineraryItem item)
+        public async Task<IActionResult> AddLocation(
+            int itineraryId,
+            int locationId,
+            string day,
+            string time,
+            string note)
         {
-            var itinerary = itineraries
-                .FirstOrDefault(x => x.Id == item.ItineraryId);
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            var itinerary = await _context.Itineraries
+                .FirstOrDefaultAsync(x =>
+                    x.Id == itineraryId &&
+                    x.UserId == userId.Value);
 
             if (itinerary == null)
             {
                 return NotFound();
             }
 
-            // Danh sách địa điểm mẫu
-            var locations = new Dictionary<int, string>
-    {
-        { 1, "Đà Nẵng" },
-        { 2, "Đà Lạt" },
-        { 3, "Vịnh Hạ Long" },
-        { 4, "Sapa" },
-        { 5, "Phú Quốc" },
-        { 6, "Hội An" }
-    };
 
-            if (!locations.ContainsKey(item.LocationId))
+            var location = await _context.Locations
+                .FirstOrDefaultAsync(x =>
+                    x.Id == locationId);
+
+            if (location == null)
             {
-                ModelState.AddModelError(
-                    "LocationId",
-                    "Vui lòng chọn một địa điểm."
-                );
+                return NotFound();
             }
 
-            if (!ModelState.IsValid)
+
+            // Kiểm tra ngày
+
+            if (string.IsNullOrWhiteSpace(day))
             {
-                ViewBag.Itinerary = itinerary;
-                return View(item);
+                TempData["Error"] =
+                    "Vui lòng chọn ngày.";
+
+                return RedirectToAction(
+                    "AddLocationForm",
+                    new
+                    {
+                        itineraryId,
+                        locationId
+                    });
             }
 
-            item.Id = itineraryItems.Count > 0
-                ? itineraryItems.Max(x => x.Id) + 1
-                : 1;
 
-            item.LocationName = locations[item.LocationId];
+            // Không cho thêm trùng địa điểm
 
-            item.OrderIndex = itineraryItems
-                .Where(x => x.ItineraryId == item.ItineraryId)
-                .Count() + 1;
+            bool exists = await _context.ItineraryItems
+                .AnyAsync(x =>
+                    x.ItineraryId == itineraryId &&
+                    x.LocationId == locationId);
 
-            itineraryItems.Add(item);
+            if (exists)
+            {
+                TempData["Error"] =
+                    "Địa điểm này đã có trong lịch trình.";
 
-            // Cập nhật số lượng địa điểm
-            itinerary.NumberOfLocations = itineraryItems
-                .Count(x => x.ItineraryId == itinerary.Id);
+                return RedirectToAction(
+                    "SelectLocation",
+                    new { itineraryId });
+            }
+
+
+            // Tìm OrderIndex tiếp theo
+
+            int nextOrder =
+                await _context.ItineraryItems
+                    .Where(x =>
+                        x.ItineraryId == itineraryId)
+                    .Select(x => (int?)x.OrderIndex)
+                    .MaxAsync() ?? 0;
+
+            nextOrder++;
+
+
+            var item = new ItineraryItem
+            {
+                ItineraryId = itineraryId,
+
+                LocationId = locationId,
+
+                LocationName = location.Name,
+
+                Day = day.Trim(),
+
+                Time = time?.Trim() ?? "",
+
+                Note = note?.Trim() ?? "",
+
+                OrderIndex = nextOrder
+            };
+
+
+            _context.ItineraryItems.Add(item);
+
+
+            itinerary.NumberOfLocations++;
+
+
+            await _context.SaveChangesAsync();
+
+
+            TempData["Success"] =
+                $"Đã thêm {location.Name} vào lịch trình.";
+
 
             return RedirectToAction(
                 "Details",
-                new { id = item.ItineraryId }
-            );
+                new { id = itineraryId });
         }
 
+
+        // ==============================
+        // XÓA ĐỊA ĐIỂM KHỎI LỊCH TRÌNH
+        // ==============================
+
+        [HttpGet]
+        public async Task<IActionResult> RemoveLocation(
+            int id,
+            int itineraryId)
+        {
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            var itinerary = await _context.Itineraries
+                .FirstOrDefaultAsync(x =>
+                    x.Id == itineraryId &&
+                    x.UserId == userId.Value);
+
+            if (itinerary == null)
+            {
+                return NotFound();
+            }
+
+
+            var item = await _context.ItineraryItems
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.ItineraryId == itineraryId);
+
+            if (item != null)
+            {
+                _context.ItineraryItems.Remove(item);
+
+
+                if (itinerary.NumberOfLocations > 0)
+                {
+                    itinerary.NumberOfLocations--;
+                }
+
+
+                await _context.SaveChangesAsync();
+
+
+                TempData["Success"] =
+                    "Đã xóa địa điểm khỏi lịch trình.";
+            }
+
+
+            return RedirectToAction(
+                "Details",
+                new { id = itineraryId });
+        }
+
+
+        // ==============================
+        // XÓA LỊCH TRÌNH
+        // ==============================
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            var itinerary = await _context.Itineraries
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.UserId == userId.Value);
+
+            if (itinerary == null)
+            {
+                return NotFound();
+            }
+
+
+            var items = await _context.ItineraryItems
+                .Where(x => x.ItineraryId == id)
+                .ToListAsync();
+
+
+            if (items.Any())
+            {
+                _context.ItineraryItems.RemoveRange(items);
+            }
+
+
+            _context.Itineraries.Remove(itinerary);
+
+
+            await _context.SaveChangesAsync();
+
+
+            TempData["Success"] =
+                "Đã xóa lịch trình.";
+
+
+            return RedirectToAction("Index");
+        }
+
+
+        // ==============================
+        // CHỈNH SỬA - GET
+        // ==============================
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            var itinerary = await _context.Itineraries
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.UserId == userId.Value);
+
+            if (itinerary == null)
+            {
+                return NotFound();
+            }
+
+
+            return View(itinerary);
+        }
+
+
+        // ==============================
+        // CHỈNH SỬA - POST
+        // ==============================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            int id,
+            string title,
+            string description,
+            DateTime startDate,
+            DateTime endDate,
+            bool isPublic)
+        {
+            int? userId = GetCurrentUserId();
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            var itinerary = await _context.Itineraries
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.UserId == userId.Value);
+
+            if (itinerary == null)
+            {
+                return NotFound();
+            }
+
+
+            // Kiểm tra tên
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                ViewBag.Error =
+                    "Vui lòng nhập tên lịch trình.";
+
+                return View(itinerary);
+            }
+
+
+            // Kiểm tra ngày
+
+            if (endDate.Date < startDate.Date)
+            {
+                ViewBag.Error =
+                    "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.";
+
+                return View(itinerary);
+            }
+
+
+            // Cập nhật
+
+            itinerary.Title =
+                title.Trim();
+
+            itinerary.Description =
+                description?.Trim() ?? "";
+
+            itinerary.StartDate =
+                startDate;
+
+            itinerary.EndDate =
+                endDate;
+
+            itinerary.IsPublic =
+                isPublic;
+
+
+            await _context.SaveChangesAsync();
+
+
+            TempData["Success"] =
+                "Đã cập nhật lịch trình thành công.";
+
+
+            return RedirectToAction(
+                "Details",
+                new { id = itinerary.Id });
+        }
     }
 }

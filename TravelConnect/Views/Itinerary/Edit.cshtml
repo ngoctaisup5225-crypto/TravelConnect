@@ -1,0 +1,430 @@
+﻿@model TravelConnect.Models.Itinerary
+
+@{
+    ViewData["Title"] = "Chỉnh sửa lịch trình";
+}
+
+<div class="edit-itinerary-page">
+
+    <div class="edit-itinerary-container">
+
+        <!-- Breadcrumb -->
+
+        <div class="breadcrumb-custom">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <a asp-controller="Itinerary"
+               asp-action="Index">
+                Lịch trình
+            </a>
+
+            <span>›</span>
+
+            <span>Chỉnh sửa</span>
+
+        </div>
+
+
+        <!-- Card -->
+
+        <div class="edit-itinerary-card">
+
+            <div class="edit-header">
+
+                <div class="edit-icon">
+                    ✏️
+                </div>
+
+                <div>
+
+                    <h1>
+                        Chỉnh sửa lịch trình
+                    </h1>
+
+                    <p>
+                        Cập nhật thông tin chuyến đi của bạn.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="edit-error">
+                    ⚠️ @ViewBag.Error
+                </div>
+            }
+
+
+            <form asp-controller="Itinerary"
+                  asp-action="Edit"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.Id" />
+
+
+                <!-- Tên -->
+
+                <div class="form-group">
+
+                    <label>
+                        Tên lịch trình
+                    </label>
+
+                    <input type="text"
+                           name="title"
+                           value="@Model.Title"
+                           placeholder="Ví dụ: Đà Lạt 3 ngày 2 đêm"
+                           required />
+
+                </div>
+
+
+                <!-- Mô tả -->
+
+                <div class="form-group">
+
+                    <label>
+                        Mô tả
+                    </label>
+
+                    <textarea name="description"
+                              rows="5"
+                              placeholder="Mô tả chuyến đi...">@Model.Description</textarea>
+
+                </div>
+
+
+                <!-- Ngày -->
+
+                <div class="date-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Ngày bắt đầu
+                        </label>
+
+                        <input type="date"
+                               name="startDate"
+                               value="@Model.StartDate.ToString("yyyy-MM-dd")"
+                               required />
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Ngày kết thúc
+                        </label>
+
+                        <input type="date"
+                               name="endDate"
+                               value="@Model.EndDate.ToString("yyyy-MM-dd")"
+                               required />
+
+                    </div>
+
+                </div>
+
+
+                <!-- Công khai -->
+
+                <div class="public-option">
+
+                    <label class="checkbox-label">
+
+                        <input type="checkbox"
+                               name="isPublic"
+                               value="true"
+                        @(Model.IsPublic ? "checked" : "") />
+
+                        <span>
+
+                            <strong>
+                                🌎 Công khai lịch trình
+                            </strong>
+
+                            <small>
+                                Người khác có thể xem lịch trình này.
+                            </small>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="edit-actions">
+
+                    <a asp-controller="Itinerary"
+                       asp-action="Details"
+                       asp-route-id="@Model.Id"
+                       class="cancel-edit-btn">
+                        Hủy
+                    </a>
+
+
+                    <button type="submit"
+                            class="save-edit-btn">
+                        💾 Lưu thay đổi
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .edit-itinerary-page {
+        padding: 35px 20px 70px;
+    }
+
+
+    .edit-itinerary-container {
+        max-width: 750px;
+        margin: 0 auto;
+    }
+
+
+    .edit-itinerary-card {
+        margin-top: 25px;
+        padding: 30px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+
+    .edit-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding-bottom: 25px;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+
+    .edit-icon {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: #eff6ff;
+        font-size: 27px;
+        flex-shrink: 0;
+    }
+
+
+    .edit-header h1 {
+        margin: 0 0 5px;
+        font-size: 27px;
+        color: #222;
+    }
+
+
+    .edit-header p {
+        margin: 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+
+    .edit-error {
+        padding: 13px 15px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        font-size: 14px;
+    }
+
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+
+            .form-group input:focus,
+            .form-group textarea:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+            }
+
+
+    .date-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+
+    .public-option {
+        padding: 15px;
+        margin-bottom: 25px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+
+    .checkbox-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        cursor: pointer;
+    }
+
+
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+
+        .checkbox-label span {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+
+        .checkbox-label strong {
+            color: #333;
+            font-size: 14px;
+        }
+
+
+        .checkbox-label small {
+            color: #888;
+            font-size: 12px;
+        }
+
+
+    .edit-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+
+    .cancel-edit-btn,
+    .save-edit-btn {
+        padding: 11px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+
+    .cancel-edit-btn {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+
+        .cancel-edit-btn:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+
+    .save-edit-btn {
+        border: none;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+    }
+
+
+        .save-edit-btn:hover {
+            background: #1d4ed8;
+        }
+
+
+    @@media (max-width: 600px) {
+
+        .edit-itinerary-page {
+            padding: 25px 12px 50px;
+        }
+
+        .edit-itinerary-card {
+            padding: 20px;
+        }
+
+        .date-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .edit-actions {
+            flex-direction: column-reverse;
+        }
+
+        .cancel-edit-btn,
+        .save-edit-btn {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+    }
+
+</style>

@@ -1,0 +1,651 @@
+﻿@using TravelConnect.Models
+
+@{
+    ViewData["Title"] = "Kết quả AI";
+
+    var recommendations =
+        ViewBag.Recommendations as List<Location>
+        ?? new List<Location>();
+
+    var itinerarySuggestions =
+        ViewBag.ItinerarySuggestions as List<Location>
+        ?? new List<Location>();
+
+    string destination =
+        ViewBag.Destination ?? "";
+
+    int days =
+        ViewBag.Days ?? 0;
+
+    decimal budget =
+        ViewBag.Budget ?? 0;
+
+    string interest =
+        ViewBag.Interest ?? "";
+}
+
+<section class="ai-result-page">
+
+    <div class="ai-result-container">
+
+
+        <!-- =========================
+             HEADER
+             ========================= -->
+
+        <div class="ai-result-header">
+
+            <span class="ai-result-label">
+                ✨ TRAVELCONNECT AI
+            </span>
+
+            <h1>
+                Gợi ý dành cho bạn
+            </h1>
+
+            <p>
+                Hệ thống đã phân tích thông tin chuyến đi
+                và đưa ra các địa điểm phù hợp.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             THÔNG TIN CHUYẾN ĐI
+             ========================= -->
+
+        <div class="trip-summary">
+
+            <div>
+                <span>📍 Điểm đến</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(destination)
+                        ? "Chưa xác định"
+                        : destination)
+                </strong>
+            </div>
+
+
+            <div>
+                <span>📅 Số ngày</span>
+                <strong>
+                    @days ngày
+                </strong>
+            </div>
+
+
+            <div>
+                <span>💰 Ngân sách</span>
+                <strong>
+                    @budget.ToString("N0") VNĐ
+                </strong>
+            </div>
+
+
+            <div>
+                <span>❤️ Sở thích</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(interest)
+                        ? "Tất cả"
+                        : interest)
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             ĐỊA ĐIỂM
+             ========================= -->
+
+        <div class="result-section">
+
+            <div class="result-section-header">
+
+                <div>
+
+                    <span>
+                        🎯 Đề xuất
+                    </span>
+
+                    <h2>
+                        Địa điểm phù hợp
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            @if (recommendations.Any())
+            {
+                <div class="ai-location-grid">
+
+                    @foreach (var location in recommendations)
+                    {
+                        <div class="ai-location-card">
+
+                            <div class="ai-location-image">
+
+                                @if (!string.IsNullOrWhiteSpace(location.Image))
+                                {
+                                    <img src="@location.Image"
+                                         alt="@location.Name" />
+                                }
+                                else
+                                {
+                                    <div class="ai-no-image">
+                                        📍
+                                    </div>
+                                }
+
+                            </div>
+
+
+                            <div class="ai-location-content">
+
+                                <span class="ai-category">
+                                    @location.Category
+                                </span>
+
+                                <h3>
+                                    @location.Name
+                                </h3>
+
+                                <p class="ai-province">
+                                    📍 @location.Province
+                                </p>
+
+                                <div class="ai-rating">
+                                    ⭐ @location.Rating.ToString("0.0")
+                                </div>
+
+
+                                <a asp-controller="Location"
+                                   asp-action="Details"
+                                   asp-route-id="@location.Id"
+                                   class="ai-view-location">
+
+                                    Xem địa điểm →
+
+                                </a>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="ai-empty">
+                    Không tìm thấy địa điểm phù hợp.
+                </div>
+            }
+
+        </div>
+
+
+        <!-- =========================
+             LỊCH TRÌNH GỢI Ý
+             ========================= -->
+
+        <div class="result-section">
+
+            <div class="result-section-header">
+
+                <div>
+
+                    <span>
+                        🗓️ Gợi ý lịch trình
+                    </span>
+
+                    <h2>
+                        Lịch trình tham khảo
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="suggested-itinerary">
+
+                @if (itinerarySuggestions.Any())
+                {
+                    @for (int i = 0;
+                          i < itinerarySuggestions.Count;
+                          i++)
+                    {
+                        var location =
+                            itinerarySuggestions[i];
+
+                        <div class="suggested-day">
+
+                            <div class="suggested-day-number">
+                                @(i + 1)
+                            </div>
+
+                            <div class="suggested-day-content">
+
+                                <span>
+                                    Ngày @(i + 1)
+                                </span>
+
+                                <strong>
+                                    📍 @location.Name
+                                </strong>
+
+                                <small>
+                                    @location.Province
+                                </small>
+
+                            </div>
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>
+                        Chưa có lịch trình gợi ý.
+                    </p>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             BUTTONS
+             ========================= -->
+
+        <div class="ai-result-actions">
+
+            <a asp-controller="AI"
+               asp-action="Index"
+               class="try-again-btn">
+
+                ← Tạo gợi ý khác
+
+            </a>
+
+
+            <a asp-controller="Itinerary"
+               asp-action="Create"
+               class="create-trip-btn">
+
+                🗓️ Tạo lịch trình
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<style>
+
+    .ai-result-page {
+        padding: 45px 20px 80px;
+        background: #f8fafc;
+        min-height: 70vh;
+    }
+
+
+    .ai-result-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+
+    /* HEADER */
+
+    .ai-result-header {
+        margin-bottom: 25px;
+    }
+
+
+    .ai-result-label {
+        color: #7c3aed;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+
+    .ai-result-header h1 {
+        margin: 8px 0;
+        color: #222;
+        font-size: 34px;
+    }
+
+
+    .ai-result-header p {
+        margin: 0;
+        color: #777;
+    }
+
+
+    /* SUMMARY */
+
+    .trip-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+
+
+        .trip-summary > div {
+            padding: 16px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+        }
+
+
+        .trip-summary span {
+            display: block;
+            margin-bottom: 6px;
+            color: #999;
+            font-size: 12px;
+        }
+
+
+        .trip-summary strong {
+            color: #333;
+            font-size: 14px;
+        }
+
+
+    /* SECTION */
+
+    .result-section {
+        margin-bottom: 35px;
+    }
+
+
+    .result-section-header {
+        margin-bottom: 18px;
+    }
+
+
+        .result-section-header span {
+            color: #7c3aed;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+
+        .result-section-header h2 {
+            margin: 5px 0 0;
+            color: #222;
+            font-size: 24px;
+        }
+
+
+    /* LOCATION GRID */
+
+    .ai-location-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+
+    .ai-location-card {
+        overflow: hidden;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.04);
+    }
+
+
+    .ai-location-image {
+        height: 170px;
+        overflow: hidden;
+        background: #f1f5f9;
+    }
+
+
+        .ai-location-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+    .ai-no-image {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+    }
+
+
+    .ai-location-content {
+        padding: 17px;
+    }
+
+
+    .ai-category {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 15px;
+        background: #ede9fe;
+        color: #7c3aed;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+
+    .ai-location-content h3 {
+        margin: 9px 0 5px;
+        color: #222;
+        font-size: 19px;
+    }
+
+
+    .ai-province {
+        margin: 0 0 7px;
+        color: #777;
+        font-size: 12px;
+    }
+
+
+    .ai-rating {
+        margin-bottom: 12px;
+        color: #d97706;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    .ai-view-location {
+        display: block;
+        padding: 10px;
+        border-radius: 9px;
+        background: #f1f5f9;
+        color: #334155;
+        text-align: center;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+        .ai-view-location:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+
+    /* ITINERARY */
+
+    .suggested-itinerary {
+        padding: 20px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+    }
+
+
+    .suggested-day {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+
+        .suggested-day:last-child {
+            border-bottom: none;
+        }
+
+
+    .suggested-day-number {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #ede9fe;
+        color: #7c3aed;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+
+    .suggested-day-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+
+        .suggested-day-content span {
+            color: #7c3aed;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+
+        .suggested-day-content strong {
+            color: #333;
+            font-size: 15px;
+        }
+
+
+        .suggested-day-content small {
+            color: #888;
+            font-size: 12px;
+        }
+
+
+    .ai-empty {
+        padding: 40px;
+        background: white;
+        border: 1px dashed #d1d5db;
+        border-radius: 14px;
+        color: #888;
+        text-align: center;
+    }
+
+
+    /* BUTTONS */
+
+    .ai-result-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+
+    .try-again-btn,
+    .create-trip-btn {
+        padding: 12px 18px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+
+    .try-again-btn {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+
+        .try-again-btn:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+
+    .create-trip-btn {
+        background: #7c3aed;
+        color: white;
+    }
+
+
+        .create-trip-btn:hover {
+            background: #6d28d9;
+            color: white;
+        }
+
+
+    /* MOBILE */
+
+    @@media (max-width: 850px) {
+
+        .trip-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .ai-location-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    @@media (max-width: 600px) {
+
+        .ai-result-page {
+            padding: 30px 12px 60px;
+        }
+
+        .ai-result-header h1 {
+            font-size: 28px;
+        }
+
+        .trip-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .ai-location-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ai-result-actions {
+            flex-direction: column;
+        }
+
+        .try-again-btn,
+        .create-trip-btn {
+            text-align: center;
+        }
+    }
+
+</style>

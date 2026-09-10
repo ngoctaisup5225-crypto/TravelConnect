@@ -51,14 +51,8 @@
             <a asp-controller="Favorite"
                asp-action="Add"
                asp-route-id="@Model.Id"
-               asp-route-name="@Model.Name"
-               asp-route-province="@Model.Province"
-               asp-route-image="@Model.Image"
-               asp-route-rating="@Model.Rating"
                class="detail-favorite">
-
                 ❤️ Lưu địa điểm
-
             </a>
 
         </div>
@@ -168,7 +162,6 @@
 
 
                     <!-- FAVORITE -->
-
                     <a asp-controller="Favorite"
                        asp-action="Add"
                        asp-route-id="@Model.Id"
@@ -176,10 +169,8 @@
                        asp-route-province="@Model.Province"
                        asp-route-image="@Model.Image"
                        asp-route-rating="@Model.Rating"
-                       class="secondary-action">
-
+                       class="detail-favorite">
                         ❤️ Lưu địa điểm
-
                     </a>
 
                 </div>

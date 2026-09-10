@@ -1,55 +1,139 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TravelConnect.Data;
 using TravelConnect.Models;
 
 namespace TravelConnect.Controllers
 {
     public class FavoriteController : Controller
     {
-        private static List<Favorite> favorites = new List<Favorite>();
+        private readonly TravelConnectDbContext _context;
 
-        public IActionResult Index()
+        public FavoriteController(TravelConnectDbContext context)
         {
+            _context = context;
+        }
+
+        // =========================
+        // DANH SÁCH YÊU THÍCH
+        // =========================
+        public async Task<IActionResult> Index()
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            // Chưa đăng nhập
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account"
+                );
+            }
+
+            var favorites =
+                await _context.Favorites
+                .Where(x => x.UserId == userId.Value)
+                .OrderByDescending(x => x.Id)
+                .ToListAsync();
+
             return View(favorites);
         }
 
-        public IActionResult Add(
-            int id,
-            string name,
-            string province,
-            string image,
-            double rating)
+        // =========================
+        // THÊM YÊU THÍCH
+        // =========================
+        [HttpGet]
+        public async Task<IActionResult> Add(int id)
         {
-            bool exists = favorites.Any(x =>
-                x.LocationId == id &&
-                x.UserId == 1);
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
 
+            // Chưa đăng nhập
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account"
+                );
+            }
+
+            // Tìm địa điểm trong SQL
+            var location =
+                await _context.Locations
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            // Kiểm tra đã lưu chưa
+            bool exists =
+                await _context.Favorites
+                .AnyAsync(x =>
+                    x.UserId == userId.Value &&
+                    x.LocationId == location.Id
+                );
+
+            // Nếu chưa lưu thì thêm
             if (!exists)
             {
-                favorites.Add(new Favorite
+                var favorite = new Favorite
                 {
-                    Id = favorites.Count > 0
-                        ? favorites.Max(x => x.Id) + 1
-                        : 1,
+                    UserId = userId.Value,
 
-                    UserId = 1,
-                    LocationId = id,
-                    LocationName = name,
-                    Province = province,
-                    Image = image,
-                    Rating = rating
-                });
+                    LocationId = location.Id,
+
+                    LocationName = location.Name,
+
+                    Province = location.Province,
+
+                    Image = location.Image,
+
+                    Rating = location.Rating
+                };
+
+                _context.Favorites.Add(favorite);
+
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToAction("Index");
         }
 
-        public IActionResult Remove(int id)
+        // =========================
+        // XÓA YÊU THÍCH
+        // =========================
+        [HttpGet]
+        public async Task<IActionResult> Remove(int id)
         {
-            var favorite = favorites.FirstOrDefault(x => x.Id == id);
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            // Chưa đăng nhập
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account"
+                );
+            }
+
+            // Chỉ được xóa yêu thích
+            // của chính mình
+            var favorite =
+                await _context.Favorites
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.UserId == userId.Value
+                );
 
             if (favorite != null)
             {
-                favorites.Remove(favorite);
+                _context.Favorites.Remove(favorite);
+
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToAction("Index");

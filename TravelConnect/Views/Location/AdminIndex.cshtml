@@ -1,0 +1,248 @@
+﻿@model List<TravelConnect.Models.Location>
+
+@{
+    ViewData["Title"] = "Quản lý địa điểm";
+}
+
+<div class="admin-page">
+
+    <div class="admin-header">
+
+        <div>
+
+            <span class="admin-label">
+                ADMIN PANEL
+            </span>
+
+            <h1>
+                📍 Quản lý địa điểm
+            </h1>
+
+            <p>
+                Thêm, chỉnh sửa và xóa địa điểm du lịch.
+            </p>
+
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="admin-home-button">
+
+            ← Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- TOOLBAR -->
+
+    <div class="location-admin-toolbar">
+
+        <a asp-controller="Location"
+           asp-action="Create"
+           class="admin-add-button">
+
+            ➕ Thêm địa điểm
+
+        </a>
+
+        <span>
+            Tổng số: <strong>@Model.Count</strong> địa điểm
+        </span>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="admin-table-card">
+
+        <div class="table-responsive">
+
+            <table class="admin-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Địa điểm
+                        </th>
+
+                        <th>
+                            Tỉnh / Thành phố
+                        </th>
+
+                        <th>
+                            Danh mục
+                        </th>
+
+                        <th>
+                            Đánh giá
+                        </th>
+
+                        <th>
+                            Thao tác
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @foreach (var location in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                #@location.Id
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    @location.Name
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+                                @location.Province
+                            </td>
+
+
+                            <td>
+
+                                <span class="location-category">
+                                    @location.Category
+                                </span>
+
+                            </td>
+
+
+                            <td>
+                                ⭐ @location.Rating
+                            </td>
+
+
+                            <td>
+
+                                <div class="location-actions">
+
+                                    <a asp-controller="Location"
+                                       asp-action="Edit"
+                                       asp-route-id="@location.Id"
+                                       class="admin-edit-button">
+
+                                        ✏️ Sửa
+
+                                    </a>
+
+
+                                    <a asp-controller="Location"
+                                       asp-action="Delete"
+                                       asp-route-id="@location.Id"
+                                       class="admin-delete-button"
+                                       onclick="return confirm('Bạn có chắc muốn xóa địa điểm này không?');">
+
+                                        🗑️ Xóa
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .location-admin-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .admin-add-button {
+        display: inline-block;
+        padding: 10px 16px;
+        background: #111827;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+        .admin-add-button:hover {
+            background: #000;
+            color: white;
+        }
+
+    .location-category {
+        display: inline-block;
+        padding: 5px 9px;
+        background: #f3f4f6;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .location-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .admin-edit-button {
+        padding: 7px 11px;
+        background: #e0f2fe;
+        color: #0369a1;
+        text-decoration: none;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+        .admin-edit-button:hover {
+            background: #bae6fd;
+            color: #075985;
+        }
+
+    @@media (max-width: 768px) {
+
+        .location-admin-toolbar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .location-actions {
+            flex-direction: column;
+        }
+    }
+
+</style>

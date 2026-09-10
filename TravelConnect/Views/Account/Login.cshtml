@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="account-page">
+
+    <div class="account-card">
+
+        <h1>🔐 Đăng nhập</h1>
+
+        <p class="account-subtitle">
+            Đăng nhập để sử dụng đầy đủ tính năng TravelConnect
+        </p>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="account-error">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form asp-controller="Account"
+              asp-action="Login"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label>Email</label>
+
+                <input type="email"
+                       name="email"
+                       placeholder="Nhập email"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label>Mật khẩu</label>
+
+                <input type="password"
+                       name="password"
+                       placeholder="Nhập mật khẩu"
+                       required />
+            </div>
+
+            <button type="submit"
+                    class="account-button">
+                Đăng nhập
+            </button>
+
+        </form>
+
+        <p class="account-footer">
+            Chưa có tài khoản?
+            <a asp-controller="Account"
+               asp-action="Register">
+                Đăng ký ngay
+            </a>
+        </p>
+
+    </div>
+
+</div>

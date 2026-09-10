@@ -2,362 +2,1049 @@
 
 @{
     ViewData["Title"] = Model.Title;
+
+    var comments =
+        ViewBag.Comments as List<TravelConnect.Models.Comment>
+        ?? new List<TravelConnect.Models.Comment>();
+
+    int commentCount =
+        ViewBag.CommentCount != null
+        ? (int)ViewBag.CommentCount
+        : comments.Count;
+
+    int? currentUserId =
+        Context.Session.GetInt32("UserId");
+
+    bool isLoggedIn =
+        currentUserId.HasValue;
+
+    bool isLiked =
+        ViewBag.IsLiked != null
+        && (bool)ViewBag.IsLiked;
 }
 
-<section class="post-detail-page">
+<div class="post-details-page">
 
-    <div class="container">
+    <!-- =========================
+         BREADCRUMB
+         ========================= -->
+    <div class="post-breadcrumb">
 
-        <!-- BREADCRUMB -->
+        <a asp-controller="Home"
+           asp-action="Index">
+            Trang chủ
+        </a>
 
-        <div class="breadcrumb-custom">
+        <span>›</span>
 
-            <a asp-controller="Home"
-               asp-action="Index">
-                Trang chủ
-            </a>
+        <a asp-controller="Post"
+           asp-action="Index">
+            Cộng đồng
+        </a>
 
-            <span>›</span>
+        <span>›</span>
 
-            <a asp-controller="Post"
-               asp-action="Index">
-                Cộng đồng
-            </a>
+        <span>@Model.Title</span>
 
-            <span>›</span>
-
-            <span>@Model.Title</span>
-
-        </div>
-
-
-        <!-- POST -->
-
-        <article class="post-detail-card">
-
-            <!-- IMAGE -->
-            @if (!string.IsNullOrWhiteSpace(Model.Image))
-            {
-                <div class="post-detail-image">
-
-                    <img src="@Model.Image"
-                         alt="@Model.Title" />
-
-                </div>
-            }
+    </div>
 
 
-            <!-- CONTENT -->
+    <div class="post-details-container">
 
-            <div class="post-detail-content">
+        <!-- =========================
+             MAIN
+             ========================= -->
+        <main class="post-main">
+
+            <!-- =========================
+                 POST
+                 ========================= -->
+            <article class="post-card">
 
                 <!-- AUTHOR -->
+                <div class="post-header">
 
-                <div class="post-detail-author">
+                    <div class="post-author">
 
-                    <div class="author-avatar-large">
-                        👤
-                    </div>
+                        <div class="author-avatar">
 
-                    <div>
+                            @(string.IsNullOrWhiteSpace(Model.UserName)
+                                ? "U"
+                                : Model.UserName.Substring(0, 1).ToUpper())
 
-                        <strong>
-                            @Model.UserName
-                        </strong>
+                        </div>
 
-                        <span>
-                            Đăng ngày
-                            @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
-                        </span>
+                        <div class="author-info">
+
+                            <strong>
+                                @Model.UserName
+                            </strong>
+
+                            <span>
+                                @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </span>
+
+                        </div>
 
                     </div>
 
                 </div>
 
 
-                <!-- LOCATION -->
-                @if (!string.IsNullOrWhiteSpace(Model.LocationName))
-                {
-                    <div class="post-detail-location">
+                <!-- TITLE -->
+                <div class="post-content-header">
 
-                        📍 @Model.LocationName
+                    <h1>
+                        @Model.Title
+                    </h1>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.LocationName))
+                    {
+                        <div class="post-location">
+                            📍 @Model.LocationName
+                        </div>
+                    }
+
+                </div>
+
+
+                <!-- IMAGE -->
+                @if (!string.IsNullOrWhiteSpace(Model.Image))
+                {
+                    <div class="post-image-wrapper">
+
+                        <img src="@Model.Image"
+                             alt="@Model.Title"
+                             class="post-detail-image" />
 
                     </div>
                 }
 
 
-                <!-- TITLE -->
-
-                <h1>
-                    @Model.Title
-                </h1>
-
-
                 <!-- CONTENT -->
+                <div class="post-body">
 
-                <div class="post-detail-text">
-
-                    @Model.Content
-
-                </div>
-
-
-                <!-- STATS -->
-
-                <div class="post-detail-stats">
-
-                    <span>
-                        ❤️ @Model.LikeCount lượt thích
-                    </span>
-
-                    <span>
-                        💬 @Model.CommentCount bình luận
-                    </span>
+                    @foreach (var paragraph in Model.Content
+                        .Split(
+                            new[] { "\r\n", "\n" },
+                            StringSplitOptions.None))
+                    {
+                        if (!string.IsNullOrWhiteSpace(paragraph))
+                        {
+                            <p>
+                                @paragraph
+                            </p>
+                        }
+                    }
 
                 </div>
 
 
                 <!-- ACTIONS -->
+                <div class="post-actions">
 
-                <div class="post-detail-actions">
+                    @if (isLoggedIn)
+                    {
+                        <a asp-controller="Post"
+                           asp-action="Like"
+                           asp-route-id="@Model.Id"
+                           class="like-button @(isLiked ? "liked" : "")">
 
-                    <button type="button"
-                            class="post-like-button">
+                            @(isLiked ? "❤️ Đã thích" : "🤍 Thích")
 
-                        ❤️ Thích
+                            <span>
+                                @Model.LikeCount
+                            </span>
 
-                    </button>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account"
+                           asp-action="Login"
+                           class="like-button">
 
-                    <button type="button"
-                            class="post-comment-button">
+                            🤍 Thích
 
-                        💬 Bình luận
+                            <span>
+                                @Model.LikeCount
+                            </span>
 
-                    </button>
+                        </a>
+                    }
+
+                    <span class="comment-count">
+                        💬 @commentCount bình luận
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- =========================
+                 COMMENTS
+                 ========================= -->
+            <section class="comments-section">
+
+                <div class="comments-title">
+
+                    <h2>
+                        Bình luận
+                    </h2>
+
+                    <span>
+                        @commentCount
+                    </span>
+
+                </div>
+
+
+                <!-- COMMENT FORM -->
+                @if (isLoggedIn)
+                {
+                    <form asp-controller="Comment"
+                          asp-action="Add"
+                          method="post"
+                          class="comment-form">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="postId"
+                               value="@Model.Id" />
+
+                        <textarea name="content"
+                                  rows="4"
+                                  placeholder="Chia sẻ suy nghĩ của bạn..."
+                                  required></textarea>
+
+                        <div class="comment-form-bottom">
+
+                            <span>
+                                💬 Viết bình luận
+                            </span>
+
+                            <button type="submit">
+                                Gửi bình luận
+                            </button>
+
+                        </div>
+
+                    </form>
+                }
+                else
+                {
+                    <div class="login-comment-box">
+
+                        <p>
+                            Bạn cần đăng nhập để bình luận.
+                        </p>
+
+                        <a asp-controller="Account"
+                           asp-action="Login">
+                            Đăng nhập
+                        </a>
+
+                    </div>
+                }
+
+
+                <!-- COMMENT LIST -->
+                <div class="comments-list">
+
+                    @if (comments.Any())
+                    {
+                        foreach (var comment in comments)
+                        {
+                            <div class="comment-item">
+
+                                <!-- AVATAR -->
+                                <div class="comment-avatar">
+
+                                    @(string.IsNullOrWhiteSpace(comment.UserName)
+                                        ? "U"
+                                        : comment.UserName.Substring(0, 1).ToUpper())
+
+                                </div>
+
+
+                                <!-- COMMENT CONTENT -->
+                                <div class="comment-content">
+
+                                    <div class="comment-top">
+
+                                        <strong>
+                                            @comment.UserName
+                                        </strong>
+
+                                        <span>
+                                            @comment.CreatedAt.ToString(
+                                                "dd/MM/yyyy HH:mm")
+                                        </span>
+
+                                    </div>
+
+
+                                    <p>
+                                        @comment.Content
+                                    </p>
+
+
+                                    <!-- DELETE OWN COMMENT -->
+                                    @if (currentUserId.HasValue &&
+                                         comment.UserId == currentUserId.Value)
+                                    {
+                                        <a asp-controller="Comment"
+                                           asp-action="Remove"
+                                           asp-route-id="@comment.Id"
+                                           asp-route-postId="@Model.Id"
+                                           class="comment-delete"
+                                           onclick="return confirm('Bạn có chắc muốn xóa bình luận này?');">
+                                            Xóa
+                                        </a>
+                                    }
+
+                                </div>
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="no-comments">
+
+                            <div class="no-comments-icon">
+                                💬
+                            </div>
+
+                            <h3>
+                                Chưa có bình luận
+                            </h3>
+
+                            <p>
+                                Hãy là người đầu tiên chia sẻ cảm nhận.
+                            </p>
+
+                        </div>
+                    }
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- =========================
+             SIDEBAR
+             ========================= -->
+        <aside class="post-sidebar">
+
+            <!-- BACK -->
+            <div class="sidebar-card">
+
+                <a asp-controller="Post"
+                   asp-action="Index"
+                   class="back-community">
+                    ← Quay lại cộng đồng
+                </a>
+
+            </div>
+
+
+            <!-- INFORMATION -->
+            <div class="sidebar-card">
+
+                <h3>
+                    📋 Thông tin bài viết
+                </h3>
+
+                <div class="sidebar-info-row">
+
+                    <span>
+                        Tác giả
+                    </span>
+
+                    <strong>
+                        @Model.UserName
+                    </strong>
+
+                </div>
+
+
+                <div class="sidebar-info-row">
+
+                    <span>
+                        Địa điểm
+                    </span>
+
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.LocationName)
+                            ? "Chưa cập nhật"
+                            : Model.LocationName)
+                    </strong>
+
+                </div>
+
+
+                <div class="sidebar-info-row">
+
+                    <span>
+                        Lượt thích
+                    </span>
+
+                    <strong>
+                        @Model.LikeCount
+                    </strong>
+
+                </div>
+
+
+                <div class="sidebar-info-row">
+
+                    <span>
+                        Bình luận
+                    </span>
+
+                    <strong>
+                        @commentCount
+                    </strong>
 
                 </div>
 
             </div>
 
-        </article>
 
+            <!-- CREATE POST -->
+            <div class="sidebar-card create-post-card">
 
-        <!-- COMMENT SECTION -->
-
-        <section class="comment-section">
-
-            <h2>
-                💬 Bình luận
-            </h2>
-
-            <div class="comment-empty">
-
-                <div>
-                    💭
+                <div class="create-post-icon">
+                    ✍️
                 </div>
+
+                <h3>
+                    Chia sẻ câu chuyện của bạn
+                </h3>
 
                 <p>
-                    Chưa có bình luận nào.
+                    Chia sẻ những trải nghiệm,
+                    địa điểm và kỷ niệm du lịch
+                    với cộng đồng.
                 </p>
 
-                <small>
-                    Tính năng bình luận sẽ được phát triển tiếp theo.
-                </small>
+                <a asp-controller="Post"
+                   asp-action="Create">
+                    Viết bài
+                </a>
 
             </div>
 
-        </section>
+        </aside>
 
     </div>
 
-</section>
+</div>
 
 
 <style>
 
-    .post-detail-page {
-        padding: 40px 0 80px;
-        background: #f7fafc;
-        min-height: 600px;
+    /* =========================
+           PAGE
+           ========================= */
+
+    .post-details-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 35px 20px 70px;
     }
 
-    .post-detail-card {
-        max-width: 900px;
-        margin: 30px auto 40px;
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid #e6edf3;
-        box-shadow: 0 5px 20px rgba(16, 42, 67, 0.07);
+
+    /* =========================
+           BREADCRUMB
+           ========================= */
+
+    .post-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 25px;
+        font-size: 14px;
+        color: #777;
+        flex-wrap: wrap;
     }
 
-    .post-detail-image {
-        width: 100%;
-        height: 430px;
-        overflow: hidden;
-    }
-
-        .post-detail-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .post-breadcrumb a {
+            color: #2563eb;
+            text-decoration: none;
         }
 
-    .post-detail-content {
-        padding: 35px;
+            .post-breadcrumb a:hover {
+                text-decoration: underline;
+            }
+
+
+    /* =========================
+           LAYOUT
+           ========================= */
+
+    .post-details-container {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 25px;
+        align-items: start;
     }
 
-    .post-detail-author {
+
+    /* =========================
+           POST CARD
+           ========================= */
+
+    .post-card {
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+
+    /* =========================
+           AUTHOR
+           ========================= */
+
+    .post-header {
+        padding: 22px 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .post-author {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 20px;
     }
 
-    .author-avatar-large {
-        width: 48px;
-        height: 48px;
+    .author-avatar,
+    .comment-avatar {
+        width: 45px;
+        height: 45px;
         border-radius: 50%;
-        background: #e8f6fa;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
+        background: #2563eb;
+        color: white;
+        font-weight: 700;
+        flex-shrink: 0;
     }
 
-    .post-detail-author strong {
-        display: block;
-        color: #243b53;
-        font-size: 15px;
-    }
-
-    .post-detail-author span {
-        display: block;
-        color: #829ab1;
-        font-size: 13px;
-        margin-top: 3px;
-    }
-
-    .post-detail-location {
-        display: inline-block;
-        padding: 7px 12px;
-        background: #e8f6fa;
-        color: #1687a7;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .post-detail-content h1 {
-        font-size: 36px;
-        line-height: 1.3;
-        color: #102a43;
-        margin: 10px 0 25px;
-    }
-
-    .post-detail-text {
-        color: #486581;
-        font-size: 16px;
-        line-height: 1.9;
-        white-space: pre-line;
-    }
-
-    .post-detail-stats {
+    .author-info {
         display: flex;
-        gap: 25px;
-        padding: 20px 0;
-        margin-top: 25px;
-        border-top: 1px solid #edf2f7;
-        border-bottom: 1px solid #edf2f7;
-        color: #627d98;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+        .author-info strong {
+            font-size: 15px;
+            color: #222;
+        }
+
+        .author-info span {
+            font-size: 13px;
+            color: #888;
+        }
+
+
+    /* =========================
+           TITLE
+           ========================= */
+
+    .post-content-header {
+        padding: 25px 25px 20px;
+    }
+
+        .post-content-header h1 {
+            margin: 0 0 12px;
+            font-size: 30px;
+            line-height: 1.3;
+            color: #171717;
+        }
+
+    .post-location {
+        color: #2563eb;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+
+    /* =========================
+           IMAGE
+           ========================= */
+
+    .post-image-wrapper {
+        width: 100%;
+        max-height: 550px;
+        overflow: hidden;
+        background: #f3f4f6;
+    }
+
+    .post-detail-image {
+        display: block;
+        width: 100%;
+        max-height: 550px;
+        object-fit: cover;
+    }
+
+
+    /* =========================
+           BODY
+           ========================= */
+
+    .post-body {
+        padding: 25px;
+        font-size: 16px;
+        line-height: 1.8;
+        color: #333;
+    }
+
+        .post-body p {
+            margin: 0 0 16px;
+        }
+
+            .post-body p:last-child {
+                margin-bottom: 0;
+            }
+
+
+    /* =========================
+           ACTIONS
+           ========================= */
+
+    .post-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 16px 25px;
+        border-top: 1px solid #eee;
+    }
+
+    .like-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        color: #444;
+        background: white;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .like-button:hover {
+            background: #f5f5f5;
+            transform: translateY(-1px);
+        }
+
+        .like-button.liked {
+            color: #dc2626;
+            border-color: #fecaca;
+            background: #fff5f5;
+        }
+
+    .comment-count {
+        color: #666;
         font-size: 14px;
     }
 
-    .post-detail-actions {
+
+    /* =========================
+           COMMENTS
+           ========================= */
+
+    .comments-section {
+        margin-top: 25px;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .comments-title {
         display: flex;
-        gap: 12px;
-        margin-top: 20px;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
     }
 
-    .post-like-button,
-    .post-comment-button {
-        border: none;
-        padding: 11px 18px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-    }
-
-    .post-like-button {
-        background: #fff0f1;
-        color: #d64550;
-    }
-
-    .post-comment-button {
-        background: #e8f6fa;
-        color: #1687a7;
-    }
-
-    .comment-section {
-        max-width: 900px;
-        margin: 0 auto;
-        background: white;
-        padding: 30px;
-        border-radius: 16px;
-        border: 1px solid #e6edf3;
-    }
-
-        .comment-section h2 {
-            color: #102a43;
-            margin-bottom: 25px;
+        .comments-title h2 {
+            margin: 0;
+            font-size: 22px;
         }
 
-    .comment-empty {
+        .comments-title span {
+            min-width: 28px;
+            height: 28px;
+            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background: #eef2ff;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+
+    /* =========================
+           COMMENT FORM
+           ========================= */
+
+    .comment-form {
+        margin-bottom: 25px;
+    }
+
+        .comment-form textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+            .comment-form textarea:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+    .comment-form-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+        .comment-form-bottom span {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .comment-form-bottom button {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 18px;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+            .comment-form-bottom button:hover {
+                background: #1d4ed8;
+            }
+
+
+    /* =========================
+           LOGIN COMMENT
+           ========================= */
+
+    .login-comment-box {
+        padding: 18px;
+        margin-bottom: 25px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
         text-align: center;
-        padding: 35px 20px;
-        color: #627d98;
     }
 
-        .comment-empty div {
-            font-size: 40px;
-            margin-bottom: 10px;
+        .login-comment-box p {
+            margin: 0 0 10px;
+            color: #666;
         }
 
-        .comment-empty p {
-            margin-bottom: 5px;
+        .login-comment-box a {
+            display: inline-block;
+            padding: 9px 17px;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
             font-weight: 600;
         }
 
-        .comment-empty small {
-            color: #829ab1;
-        }
-
-    @@media (max-width: 768px) {
-
-        .post-detail-page {
-            padding-top: 25px;
-        }
-
-        .post-detail-image {
-            height: 280px;
-        }
-
-        .post-detail-content {
-            padding: 22px;
-        }
-
-            .post-detail-content h1 {
-                font-size: 28px;
+            .login-comment-box a:hover {
+                background: #1d4ed8;
             }
 
-        .post-detail-stats {
-            flex-direction: column;
-            gap: 10px;
+
+    /* =========================
+           COMMENT ITEM
+           ========================= */
+
+    .comments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 12px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .comment-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
         }
 
-        .comment-section {
-            padding: 22px;
+    .comment-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
+
+    .comment-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .comment-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+    }
+
+        .comment-top strong {
+            font-size: 14px;
+        }
+
+        .comment-top span {
+            color: #999;
+            font-size: 12px;
+        }
+
+    .comment-content p {
+        margin: 0;
+        line-height: 1.6;
+        color: #444;
+        word-break: break-word;
+    }
+
+    .comment-delete {
+        display: inline-block;
+        margin-top: 7px;
+        color: #dc2626;
+        font-size: 12px;
+        text-decoration: none;
+    }
+
+        .comment-delete:hover {
+            text-decoration: underline;
+        }
+
+
+    /* =========================
+           NO COMMENTS
+           ========================= */
+
+    .no-comments {
+        text-align: center;
+        padding: 35px 15px;
+        color: #888;
+    }
+
+    .no-comments-icon {
+        font-size: 35px;
+        margin-bottom: 10px;
+    }
+
+    .no-comments h3 {
+        margin: 0 0 5px;
+        color: #444;
+    }
+
+    .no-comments p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+
+    /* =========================
+           SIDEBAR
+           ========================= */
+
+    .post-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .sidebar-card {
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+    }
+
+        .sidebar-card h3 {
+            margin: 0 0 18px;
+            font-size: 17px;
+        }
+
+
+    /* =========================
+           BACK
+           ========================= */
+
+    .back-community {
+        display: block;
+        text-align: center;
+        padding: 11px;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: #334155;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .back-community:hover {
+            background: #e2e8f0;
+        }
+
+
+    /* =========================
+           INFO
+           ========================= */
+
+    .sidebar-info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 11px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+    }
+
+        .sidebar-info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .sidebar-info-row span {
+            color: #888;
+        }
+
+        .sidebar-info-row strong {
+            text-align: right;
+            color: #333;
+        }
+
+
+    /* =========================
+           CREATE POST
+           ========================= */
+
+    .create-post-card {
+        text-align: center;
+    }
+
+    .create-post-icon {
+        font-size: 35px;
+        margin-bottom: 10px;
+    }
+
+    .create-post-card h3 {
+        margin-bottom: 8px;
+    }
+
+    .create-post-card p {
+        margin: 0 0 18px;
+        color: #777;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .create-post-card a {
+        display: block;
+        padding: 11px;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .create-post-card a:hover {
+            background: #1d4ed8;
+        }
+
+
+    /* =========================
+           RESPONSIVE
+           ========================= */
+
+    @@media (max-width: 900px) {
+
+        .post-details-container {
+            grid-template-columns: 1fr;
+        }
+
+        .post-sidebar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    @@media (max-width: 600px) {
+
+        .post-details-page {
+            padding: 20px 12px 50px;
+        }
+
+        .post-content-header h1 {
+            font-size: 24px;
+        }
+
+        .post-header,
+        .post-content-header,
+        .post-body,
+        .post-actions,
+        .comments-section {
+            padding-left: 17px;
+            padding-right: 17px;
+        }
+
+        .post-sidebar {
+            display: flex;
+        }
+
+        .comment-form-bottom {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+            .comment-form-bottom button {
+                width: 100%;
+            }
+
+        .comment-top {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 2px;
         }
     }
 
